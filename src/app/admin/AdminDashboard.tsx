@@ -186,6 +186,7 @@ export default function AdminDashboard({ initialAuthenticated }: AdminDashboardP
   const [userActionMessage, setUserActionMessage] = useState<string | null>(null);
   const [isResettingPassword, setIsResettingPassword] = useState(false);
   const [isDeletingUser, setIsDeletingUser] = useState(false);
+  const [isClearingUserHistory, setIsClearingUserHistory] = useState(false);
   const [selectedOrderIds, setSelectedOrderIds] = useState<string[]>([]);
   const [orderMessage, setOrderMessage] = useState<string | null>(null);
   const [isBatchIssuing, setIsBatchIssuing] = useState(false);
@@ -584,6 +585,54 @@ export default function AdminDashboard({ initialAuthenticated }: AdminDashboardP
     }
   }
 
+  async function clearSelectedUserHistory() {
+    if (!selectedUser) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Очистити історію ${selectedUser.minecraftNickname}? Баланс залишиться ${formatTalers(
+        selectedUser.balance
+      )}, але поповнення, рух талерів і покупки зникнуть з історії акаунта. Замовлення залишаться в загальному списку адмінки.`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setUserActionMessage(null);
+    setIsClearingUserHistory(true);
+    try {
+      const response = await fetch(`/api/admin/users/${selectedUser.id}/history`, {
+        method: "DELETE"
+      });
+
+      const data = (await response.json()) as {
+        result?: {
+          walletTransactions: number;
+          currencyTopUps: number;
+          orders: number;
+        };
+        error?: string;
+      };
+
+      if (!response.ok) {
+        setUserActionMessage(data.error || "Не вдалося очистити історію");
+        return;
+      }
+
+      const result = data.result;
+      setUserActionMessage(
+        result
+          ? `Історію очищено: рух талерів ${result.walletTransactions}, поповнення ${result.currencyTopUps}, покупок ${result.orders}.`
+          : "Історію очищено"
+      );
+      await loadData(userQuery.trim());
+    } finally {
+      setIsClearingUserHistory(false);
+    }
+  }
+
   if (!isAuthenticated) {
     return (
       <section className="shell grid min-h-[65vh] place-items-center py-14">
@@ -803,7 +852,7 @@ export default function AdminDashboard({ initialAuthenticated }: AdminDashboardP
               </form>
               {walletMessage ? <p className="mt-3 text-sm text-moss">{walletMessage}</p> : null}
 
-              <div className="mt-6 grid gap-4 border-t border-white/10 pt-5 xl:grid-cols-[1fr_auto]">
+              <div className="mt-6 grid gap-4 border-t border-white/10 pt-5 xl:grid-cols-[1fr_auto_auto]">
                 <form onSubmit={resetUserPassword} className="grid gap-3 md:grid-cols-[1fr_auto]">
                   <label className="grid gap-2">
                     <span className="text-sm font-black uppercase text-fog/50">Новий пароль</span>
@@ -826,6 +875,16 @@ export default function AdminDashboard({ initialAuthenticated }: AdminDashboardP
                     Скинути пароль
                   </button>
                 </form>
+
+                <button
+                  type="button"
+                  onClick={() => void clearSelectedUserHistory()}
+                  disabled={isClearingUserHistory}
+                  className="inline-flex items-center justify-center gap-2 self-end rounded-sm border border-gold/35 bg-gold/10 px-4 py-3 font-black uppercase text-gold transition hover:-translate-y-1 hover:bg-gold/20 disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  {isClearingUserHistory ? <Loader2 className="animate-spin" size={18} /> : <Trash2 size={18} />}
+                  Очистити історію
+                </button>
 
                 <button
                   type="button"
