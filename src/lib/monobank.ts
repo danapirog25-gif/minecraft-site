@@ -42,14 +42,21 @@ export function getMonoJarSendId(): string | null {
   return process.env.MONOBANK_JAR_SEND_ID || process.env.MONOBANK_JAR_ID || null;
 }
 
-export function getMonoJarPaymentUrl(): string {
+export function getMonoJarPaymentUrl(amountKopiyky?: number): string {
   const sendId = getMonoJarSendId();
 
   if (!sendId) {
     throw new Error("MONOBANK_JAR_SEND_ID is not configured");
   }
 
-  return `${MONOBANK_JAR_LINK_BASE_URL}/${sendId}`;
+  const paymentUrl = new URL(`${MONOBANK_JAR_LINK_BASE_URL}/${sendId}`);
+
+  if (amountKopiyky && amountKopiyky > 0) {
+    const amountHryvnias = amountKopiyky / 100;
+    paymentUrl.searchParams.set("a", Number.isInteger(amountHryvnias) ? String(amountHryvnias) : amountHryvnias.toFixed(2));
+  }
+
+  return paymentUrl.toString();
 }
 
 export async function createMonoInvoice(input: MonoInvoiceInput): Promise<MonoInvoice> {

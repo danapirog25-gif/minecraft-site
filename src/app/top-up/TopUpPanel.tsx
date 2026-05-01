@@ -97,6 +97,15 @@ export function TopUpPanel() {
     setCopyMessage("Код скопійовано");
   }
 
+  async function openBankWithComment() {
+    if (!pendingJarPayment) {
+      return;
+    }
+
+    await copyComment(pendingJarPayment.paymentComment);
+    window.open(pendingJarPayment.paymentUrl, "_blank", "noopener,noreferrer");
+  }
+
   async function checkPaymentNow() {
     if (!pendingJarPayment) {
       return;
@@ -231,7 +240,7 @@ export function TopUpPanel() {
                 Донат {formatHryvnias(pendingJarPayment.amountKopiyky)} за {formatTalers(pendingJarPayment.amountTalers)}
               </h3>
               <p className="mt-3 max-w-3xl leading-7 text-fog/70">
-                Встав цей код у коментар до платежу. Після webhook від monobank талери автоматично зарахуються на твій акаунт.
+                Скопіюй код і встав його у коментар до платежу. Без цього коду сайт не зможе привʼязати оплату до твого акаунта.
               </p>
               <div
                 className={`mt-4 inline-flex items-center gap-2 rounded-sm border px-3 py-2 text-sm font-black ${
@@ -267,15 +276,14 @@ export function TopUpPanel() {
               <Copy size={18} />
               Скопіювати код
             </button>
-            <a
-              href={pendingJarPayment.paymentUrl}
-              target="_blank"
-              rel="noreferrer"
+            <button
+              type="button"
+              onClick={() => void openBankWithComment()}
               className="menu-button inline-flex items-center gap-2 rounded-sm bg-moss px-4 py-3 font-black uppercase text-bunker transition hover:-translate-y-1 hover:bg-acid"
             >
               <ExternalLink size={18} />
-              Відкрити банку
-            </a>
+              Скопіювати код і відкрити банку
+            </button>
             <button
               type="button"
               onClick={() => void checkPaymentNow()}

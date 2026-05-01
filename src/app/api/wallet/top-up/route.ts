@@ -39,7 +39,7 @@ export async function POST(request: Request) {
           amountTalers: pack.talers,
           amountKopiyky: pack.amountKopiyky,
           status: "pending",
-          monoPaymentUrl: getMonoJarPaymentUrl(),
+          monoPaymentUrl: getMonoJarPaymentUrl(pack.amountKopiyky),
           jarCommentCode: commentCode
         }
       });
