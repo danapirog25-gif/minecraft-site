@@ -7,7 +7,7 @@
 - Frontend: Next.js App Router, TypeScript, Tailwind CSS.
 - Backend: Next.js API routes.
 - DB: Prisma + SQLite для локального тесту.
-- Payment: monobank acquiring API.
+- Payment: monobank jar via personal API webhook, with optional acquiring API fallback.
 - Admin: пароль + HttpOnly session cookie.
 
 ## Запуск
@@ -39,26 +39,41 @@ npm run dev
 
 Сайт відкриється на `http://localhost:3000`.
 
-## Де вставити monobank token
+## Monobank поповнення балансу
 
-Токен вставляється тільки у `.env` на сервері:
+Для банки використовується personal API token з `https://api.monobank.ua/`. Токени вставляються тільки у `.env` на сервері або в Environment Variables на Vercel:
 
 ```env
-MONOBANK_TOKEN="ваш_merchant_token"
-MONOBANK_JAR_ID="your_jar_id_here"
-MONOBANK_MOCK_MODE="false"
 APP_URL="https://ваш-домен.example"
+MONOBANK_JAR_MODE="true"
+MONOBANK_JAR_SEND_ID="id_з_посилання_send.monobank.ua/jar/..."
+MONOBANK_PERSONAL_TOKEN="ваш_personal_api_token"
+MONOBANK_PERSONAL_WEBHOOK_SECRET="довгий-випадковий-секрет"
+MONOBANK_JAR_ACCOUNT_ID=""
+MONOBANK_MOCK_MODE="false"
 ```
 
-Не додавайте токен у `NEXT_PUBLIC_*`, компоненти React або будь-який frontend-файл.
+`MONOBANK_JAR_ACCOUNT_ID` можна залишити порожнім: сайт сам знайде id банки через `personal/client-info` за `MONOBANK_JAR_SEND_ID`.
 
-`APP_URL` має бути публічним HTTPS-доменом, щоб monobank міг викликати webhook:
+Після деплою та оновлення env відкрийте `/admin` і натисніть **Підв'язати webhook** у блоці "Monobank банка". Це зареєструє в monobank URL:
 
 ```text
-https://ваш-домен.example/api/monobank/webhook
+https://ваш-домен.example/api/monobank/jar-webhook/<MONOBANK_PERSONAL_WEBHOOK_SECRET>
+```
+
+Коли гравець натискає "Поповнити", сайт створює pending-поповнення, показує суму та унікальний код `ZES-...`. Гравець має переказати рівно цю суму на банку й вставити код у коментар до платежу. Webhook monobank знаходить код у виписці, перевіряє суму та автоматично додає талери на баланс.
+
+Якщо пізніше підключите merchant acquiring, заповніть:
+
+```env
+MONOBANK_JAR_MODE="false"
+MONOBANK_TOKEN="ваш_merchant_token"
+MONOBANK_PUBLIC_KEY=""
 ```
 
 `MONOBANK_PUBLIC_KEY` можна залишити порожнім: код сам отримає й закешує public key через merchant API. Якщо ключ уже є, можна вставити його в env.
+
+Не додавайте жоден monobank token у `NEXT_PUBLIC_*`, компоненти React або будь-який frontend-файл.
 
 ## Як протестувати оплату
 
@@ -72,13 +87,14 @@ MONOBANK_MOCK_MODE="true"
 
 Для реального тесту:
 
-1. Отримайте merchant token monobank acquiring.
+1. Заповніть jar-змінні monobank у `.env` або Vercel Environment Variables.
 2. Встановіть `MONOBANK_MOCK_MODE="false"`.
 3. Зробіть `APP_URL` публічним HTTPS URL, наприклад через ngrok або Cloudflare Tunnel.
-4. Перезапустіть dev/prod сервер.
-5. Поповніть баланс через `/top-up`.
-6. Оплатіть інвойс на сторінці monobank.
-7. Перевірте, що webhook додав талери на баланс у `/account` і показав транзакцію в `/admin`.
+4. Перезапустіть dev/prod сервер або redeploy на Vercel.
+5. В адмінці натисніть **Підв'язати webhook**.
+6. Поповніть баланс через `/top-up`.
+7. Оплатіть банку, обов'язково вставивши код `ZES-...` у коментар.
+8. Перевірте, що webhook додав талери на баланс у `/account` і показав транзакцію в `/admin`.
 
 Для ручної перевірки webhook у dev можна тимчасово поставити:
 

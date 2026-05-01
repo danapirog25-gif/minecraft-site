@@ -47,50 +47,88 @@ async function changeBalance(tx: TransactionClient, userId: string, amount: numb
 }
 
 export async function completeCurrencyTopUp(topUpId: string, receivedAmount?: number) {
-  return prisma.$transaction(async (tx) => {
-    const topUp = await tx.currencyTopUp.findUnique({
-      where: { id: topUpId }
-    });
+  let amountMismatchTopUpId: string | null = null;
 
-    if (!topUp) {
-      throw new WalletError("NOT_FOUND", "Поповнення не знайдено");
-    }
-
-    if (topUp.status === "paid") {
-      return topUp;
-    }
-
-    if (receivedAmount !== undefined && receivedAmount !== topUp.amountKopiyky) {
-      await tx.currencyTopUp.update({
-        where: { id: topUp.id },
-        data: { status: "failed" }
+  try {
+    return await prisma.$transaction(async (tx) => {
+      const topUp = await tx.currencyTopUp.findUnique({
+        where: { id: topUpId }
       });
 
-      throw new WalletError("AMOUNT_MISMATCH", "Сума платежу не збігається з пакетом талерів");
+      if (!topUp) {
+        throw new WalletError("NOT_FOUND", "Поповнення не знайдено");
+      }
+
+      if (topUp.status === "paid") {
+        return topUp;
+      }
+
+      if (receivedAmount !== undefined && receivedAmount !== topUp.amountKopiyky) {
+        amountMismatchTopUpId = topUp.id;
+        throw new WalletError("AMOUNT_MISMATCH", "Сума платежу не збігається з пакетом талерів");
+      }
+
+      const claim = await tx.currencyTopUp.updateMany({
+        where: {
+          id: topUp.id,
+          status: "pending"
+        },
+        data: {
+          status: "paid",
+          paidAt: topUp.paidAt ?? new Date()
+        }
+      });
+
+      if (claim.count !== 1) {
+        const currentTopUp = await tx.currencyTopUp.findUnique({
+          where: { id: topUp.id }
+        });
+
+        if (currentTopUp) {
+          return currentTopUp;
+        }
+
+        throw new WalletError("NOT_FOUND", "Поповнення не знайдено");
+      }
+
+      const balanceAfter = await changeBalance(tx, topUp.userId, topUp.amountTalers);
+
+      await tx.walletTransaction.create({
+        data: {
+          userId: topUp.userId,
+          type: "topup",
+          amount: topUp.amountTalers,
+          balanceAfter,
+          description: `Поповнення через monobank: ${formatTalers(topUp.amountTalers)}`,
+          topUpId: topUp.id
+        }
+      });
+
+      const paidTopUp = await tx.currencyTopUp.findUnique({
+        where: { id: topUp.id }
+      });
+
+      if (!paidTopUp) {
+        throw new WalletError("NOT_FOUND", "Поповнення не знайдено");
+      }
+
+      return paidTopUp;
+    });
+  } catch (error) {
+    if (error instanceof WalletError && error.code === "AMOUNT_MISMATCH" && amountMismatchTopUpId) {
+      await prisma.currencyTopUp.updateMany({
+        where: {
+          id: amountMismatchTopUpId,
+          status: "pending"
+        },
+        data: {
+          status: "failed"
+        }
+      });
     }
 
-    const balanceAfter = await changeBalance(tx, topUp.userId, topUp.amountTalers);
-    const paidTopUp = await tx.currencyTopUp.update({
-      where: { id: topUp.id },
-      data: {
-        status: "paid",
-        paidAt: topUp.paidAt ?? new Date()
-      }
-    });
-
-    await tx.walletTransaction.create({
-      data: {
-        userId: topUp.userId,
-        type: "topup",
-        amount: topUp.amountTalers,
-        balanceAfter,
-        description: `Поповнення через monobank: ${formatTalers(topUp.amountTalers)}`,
-        topUpId: topUp.id
-      }
-    });
-
-    return paidTopUp;
-  });
+    throw error;
+  }
 }
 
 export async function adjustUserBalance(input: {

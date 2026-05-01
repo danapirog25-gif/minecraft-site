@@ -82,8 +82,8 @@ model CurrencyTopUp {
   status             String              @default("pending")
   monoInvoiceId      String?             @unique
   monoPaymentUrl     String?
-  jarCommentCode     String?
-  jarStatementItemId String?
+  jarCommentCode     String?             @unique
+  jarStatementItemId String?             @unique
   createdAt          DateTime            @default(now())
   paidAt             DateTime?
   user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -91,8 +91,6 @@ model CurrencyTopUp {
 
   @@index([userId, createdAt])
   @@index([status, createdAt])
-  @@index([jarCommentCode])
-  @@index([jarStatementItemId])
 }
 
 model WalletTransaction {

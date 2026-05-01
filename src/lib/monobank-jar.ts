@@ -10,6 +10,7 @@ type MonoJar = {
 };
 
 type MonoClientInfo = {
+  webHookUrl?: string;
   jars?: MonoJar[];
 };
 
@@ -66,27 +67,20 @@ export function getMonoPersonalWebhookUrl(): string {
   return `${appUrl}/api/monobank/jar-webhook/${encodeURIComponent(getMonoPersonalWebhookSecret())}`;
 }
 
-export async function getMonoJarAccountId(): Promise<string | null> {
-  const configuredAccountId = process.env.MONOBANK_JAR_ACCOUNT_ID;
-  if (configuredAccountId) {
-    return configuredAccountId;
-  }
-
-  const sendId = getMonoJarSendId();
+function getMonoPersonalToken(): string {
   const token = process.env.MONOBANK_PERSONAL_TOKEN;
 
-  if (!sendId || !token) {
-    return null;
+  if (!token) {
+    throw new Error("MONOBANK_PERSONAL_TOKEN is not configured");
   }
 
-  const now = Date.now();
-  if (cachedJarAccountId && now - cachedJarAccountIdAt < 60_000) {
-    return cachedJarAccountId;
-  }
+  return token;
+}
 
+export async function fetchMonoClientInfo(): Promise<MonoClientInfo> {
   const response = await fetch(`${MONOBANK_API_URL}/personal/client-info`, {
     headers: {
-      "X-Token": token
+      "X-Token": getMonoPersonalToken()
     },
     cache: "no-store"
   });
@@ -96,7 +90,46 @@ export async function getMonoJarAccountId(): Promise<string | null> {
     throw new Error(`monobank client-info failed: ${response.status} ${details}`);
   }
 
-  const data = (await response.json()) as MonoClientInfo;
+  return (await response.json()) as MonoClientInfo;
+}
+
+export async function registerMonoPersonalWebhook(): Promise<{ webHookUrl: string }> {
+  const webHookUrl = getMonoPersonalWebhookUrl();
+  const response = await fetch(`${MONOBANK_API_URL}/personal/webhook`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Token": getMonoPersonalToken()
+    },
+    body: JSON.stringify({ webHookUrl }),
+    cache: "no-store"
+  });
+
+  if (!response.ok) {
+    const details = await response.text();
+    throw new Error(`monobank personal webhook registration failed: ${response.status} ${details}`);
+  }
+
+  return { webHookUrl };
+}
+
+export async function getMonoJarAccountId(): Promise<string | null> {
+  const configuredAccountId = process.env.MONOBANK_JAR_ACCOUNT_ID;
+  if (configuredAccountId) {
+    return configuredAccountId;
+  }
+
+  const sendId = getMonoJarSendId();
+  if (!sendId || !process.env.MONOBANK_PERSONAL_TOKEN) {
+    return null;
+  }
+
+  const now = Date.now();
+  if (cachedJarAccountId && now - cachedJarAccountIdAt < 60_000) {
+    return cachedJarAccountId;
+  }
+
+  const data = await fetchMonoClientInfo();
   const jar = data.jars?.find((item) => item.sendId === sendId || item.id === sendId);
   cachedJarAccountId = jar?.id ?? null;
   cachedJarAccountIdAt = now;
@@ -120,11 +153,6 @@ export async function isExpectedMonoJarAccount(account?: string): Promise<boolea
 }
 
 export async function fetchMonoJarStatement(from: number, to: number): Promise<MonoJarStatementItem[]> {
-  const token = process.env.MONOBANK_PERSONAL_TOKEN;
-  if (!token) {
-    throw new Error("MONOBANK_PERSONAL_TOKEN is not configured");
-  }
-
   const accountId = await getMonoJarAccountId();
   if (!accountId) {
     throw new Error("MONOBANK_JAR_ACCOUNT_ID could not be resolved");
@@ -134,7 +162,7 @@ export async function fetchMonoJarStatement(from: number, to: number): Promise<M
     `${MONOBANK_API_URL}/personal/statement/${encodeURIComponent(accountId)}/${from}/${to}`,
     {
       headers: {
-        "X-Token": token
+        "X-Token": getMonoPersonalToken()
       },
       cache: "no-store"
     }

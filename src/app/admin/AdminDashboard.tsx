@@ -189,6 +189,8 @@ export default function AdminDashboard({ initialAuthenticated }: AdminDashboardP
   const [selectedOrderIds, setSelectedOrderIds] = useState<string[]>([]);
   const [orderMessage, setOrderMessage] = useState<string | null>(null);
   const [isBatchIssuing, setIsBatchIssuing] = useState(false);
+  const [monoWebhookMessage, setMonoWebhookMessage] = useState<string | null>(null);
+  const [isRegisteringMonoWebhook, setIsRegisteringMonoWebhook] = useState(false);
 
   const visibleOrders = useMemo(() => {
     if (filter === "all") {
@@ -386,6 +388,24 @@ export default function AdminDashboard({ initialAuthenticated }: AdminDashboardP
       }
     } finally {
       setIsSavingSettings(false);
+    }
+  }
+
+  async function registerMonoJarWebhook() {
+    setIsRegisteringMonoWebhook(true);
+    setMonoWebhookMessage(null);
+
+    try {
+      const response = await fetch("/api/admin/monobank/jar-webhook", {
+        method: "POST"
+      });
+      const data = (await response.json()) as { message?: string; error?: string };
+
+      setMonoWebhookMessage(
+        response.ok ? data.message || "Webhook банки monobank підв'язано" : data.error || "Не вдалося підв'язати webhook"
+      );
+    } finally {
+      setIsRegisteringMonoWebhook(false);
     }
   }
 
@@ -639,6 +659,33 @@ export default function AdminDashboard({ initialAuthenticated }: AdminDashboardP
           >
             {isSavingSettings ? <Loader2 className="animate-spin" size={18} /> : settings.streamActive ? <Ban size={18} /> : <Power size={18} />}
             {settings.streamActive ? "Позначити стрім завершеним" : "Позначити стрім активним"}
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-4 rounded-sm border border-ward/30 bg-ward/10 p-5">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-start gap-3">
+            <div className="item-cube grid h-12 w-12 place-items-center border border-ward/30 bg-ward/10 text-ward">
+              <RefreshCw size={24} />
+            </div>
+            <div>
+              <p className="text-sm font-black uppercase tracking-wide text-fog/60">Monobank банка</p>
+              <h2 className="mt-1 text-2xl font-black text-white">Webhook поповнень</h2>
+              <p className="mt-2 leading-7 text-fog/70">
+                Натисни після оновлення env на Vercel, щоб monobank почав надсилати події по банці на цей сайт.
+              </p>
+              {monoWebhookMessage ? <p className="mt-2 text-sm font-bold text-acid">{monoWebhookMessage}</p> : null}
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => void registerMonoJarWebhook()}
+            disabled={isRegisteringMonoWebhook}
+            className="menu-button inline-flex items-center justify-center gap-2 rounded-sm bg-ward px-5 py-3 font-black uppercase text-bunker transition hover:-translate-y-1 hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70"
+          >
+            {isRegisteringMonoWebhook ? <Loader2 className="animate-spin" size={18} /> : <RefreshCw size={18} />}
+            Підв&apos;язати webhook
           </button>
         </div>
       </div>
