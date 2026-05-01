@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, Copy, CreditCard, ExternalLink, Loader2, TriangleAlert } from "lucide-react";
+import { CheckCircle2, Copy, CreditCard, ExternalLink, Loader2, RefreshCw, TriangleAlert } from "lucide-react";
 import { ItemIcon } from "@/components/ItemIcon";
 import { formatHryvnias, formatTalers, topUpPackages } from "@/lib/currency";
 
@@ -42,6 +42,8 @@ export function TopUpPanel() {
   const [activePackageId, setActivePackageId] = useState<string | null>(null);
   const [pendingJarPayment, setPendingJarPayment] = useState<PendingJarPayment | null>(null);
   const [copyMessage, setCopyMessage] = useState<string | null>(null);
+  const [paymentCheckMessage, setPaymentCheckMessage] = useState<string | null>(null);
+  const [isCheckingPayment, setIsCheckingPayment] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -95,10 +97,53 @@ export function TopUpPanel() {
     setCopyMessage("Код скопійовано");
   }
 
+  async function checkPaymentNow() {
+    if (!pendingJarPayment) {
+      return;
+    }
+
+    setIsCheckingPayment(true);
+    setPaymentCheckMessage(null);
+
+    try {
+      const response = await fetch(`/api/wallet/top-up/${encodeURIComponent(pendingJarPayment.topUpId)}?check=1`, {
+        cache: "no-store"
+      });
+      const data = (await response.json()) as TopUpStatusResponse;
+      const status = data.topUp?.status;
+
+      if (!response.ok) {
+        throw new Error(data.error || "Не вдалося перевірити оплату");
+      }
+
+      if (!status || status === "pending") {
+        setPaymentCheckMessage("Поки не бачу платіж у monobank. Якщо оплатив щойно, зачекай 30-60 секунд і перевір ще раз.");
+        return;
+      }
+
+      setPendingJarPayment((current) =>
+        current?.topUpId === pendingJarPayment.topUpId ? { ...current, status } : current
+      );
+
+      if (status === "paid") {
+        setPaymentCheckMessage("Оплату знайдено. Талери зараховано на баланс.");
+        router.refresh();
+      } else {
+        setPaymentCheckMessage(data.error || "Платіж не зараховано. Перевір суму та код у коментарі.");
+      }
+    } catch (caughtError) {
+      const message = caughtError instanceof Error ? caughtError.message : "Не вдалося перевірити оплату";
+      setPaymentCheckMessage(message);
+    } finally {
+      setIsCheckingPayment(false);
+    }
+  }
+
   async function startTopUp(packageId: string) {
     setActivePackageId(packageId);
     setPendingJarPayment(null);
     setCopyMessage(null);
+    setPaymentCheckMessage(null);
     setError(null);
 
     try {
@@ -231,7 +276,19 @@ export function TopUpPanel() {
               <ExternalLink size={18} />
               Відкрити банку
             </a>
+            <button
+              type="button"
+              onClick={() => void checkPaymentNow()}
+              disabled={isCheckingPayment || pendingJarPayment.status !== "pending"}
+              className="inline-flex items-center gap-2 rounded-sm border border-gold/35 bg-gold/10 px-4 py-3 font-black uppercase text-gold transition hover:bg-gold/20 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isCheckingPayment ? <Loader2 className="animate-spin" size={18} /> : <RefreshCw size={18} />}
+              Перевірити оплату
+            </button>
           </div>
+          {paymentCheckMessage ? (
+            <p className="mt-3 max-w-3xl text-sm font-bold text-fog/70">{paymentCheckMessage}</p>
+          ) : null}
         </div>
       ) : null}
 

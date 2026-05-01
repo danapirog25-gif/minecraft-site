@@ -118,3 +118,32 @@ export async function isExpectedMonoJarAccount(account?: string): Promise<boolea
   const sendId = getMonoJarSendId();
   return Boolean(sendId && account === sendId);
 }
+
+export async function fetchMonoJarStatement(from: number, to: number): Promise<MonoJarStatementItem[]> {
+  const token = process.env.MONOBANK_PERSONAL_TOKEN;
+  if (!token) {
+    throw new Error("MONOBANK_PERSONAL_TOKEN is not configured");
+  }
+
+  const accountId = await getMonoJarAccountId();
+  if (!accountId) {
+    throw new Error("MONOBANK_JAR_ACCOUNT_ID could not be resolved");
+  }
+
+  const response = await fetch(
+    `${MONOBANK_API_URL}/personal/statement/${encodeURIComponent(accountId)}/${from}/${to}`,
+    {
+      headers: {
+        "X-Token": token
+      },
+      cache: "no-store"
+    }
+  );
+
+  if (!response.ok) {
+    const details = await response.text();
+    throw new Error(`monobank jar statement failed: ${response.status} ${details}`);
+  }
+
+  return (await response.json()) as MonoJarStatementItem[];
+}
