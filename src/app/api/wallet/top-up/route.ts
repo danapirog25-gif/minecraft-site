@@ -12,6 +12,59 @@ const topUpSchema = z.object({
   packageId: z.string().min(1)
 });
 
+const JAR_PENDING_TTL_MS = 2 * 60 * 60 * 1000;
+const JAR_MIN_AMOUNT_OFFSET_KOPIYKY = 1;
+const JAR_MAX_AMOUNT_OFFSET_KOPIYKY = 99;
+
+async function getUniqueJarPaymentAmount(baseAmountKopiyky: number): Promise<number> {
+  const staleBefore = new Date(Date.now() - JAR_PENDING_TTL_MS);
+
+  await prisma.currencyTopUp.updateMany({
+    where: {
+      status: "pending",
+      monoInvoiceId: null,
+      jarCommentCode: {
+        not: null
+      },
+      createdAt: {
+        lt: staleBefore
+      }
+    },
+    data: {
+      status: "failed"
+    }
+  });
+
+  const activeTopUps = await prisma.currencyTopUp.findMany({
+    where: {
+      status: "pending",
+      monoInvoiceId: null,
+      jarCommentCode: {
+        not: null
+      },
+      amountKopiyky: {
+        gte: baseAmountKopiyky + JAR_MIN_AMOUNT_OFFSET_KOPIYKY,
+        lte: baseAmountKopiyky + JAR_MAX_AMOUNT_OFFSET_KOPIYKY
+      }
+    },
+    select: {
+      amountKopiyky: true
+    }
+  });
+
+  const usedAmounts = new Set(activeTopUps.map((topUp) => topUp.amountKopiyky));
+
+  for (let offset = JAR_MIN_AMOUNT_OFFSET_KOPIYKY; offset <= JAR_MAX_AMOUNT_OFFSET_KOPIYKY; offset += 1) {
+    const candidateAmount = baseAmountKopiyky + offset;
+
+    if (!usedAmounts.has(candidateAmount)) {
+      return candidateAmount;
+    }
+  }
+
+  throw new Error("No available unique monobank jar amount");
+}
+
 export async function POST(request: Request) {
   const user = await getCurrentUser();
 
@@ -32,14 +85,15 @@ export async function POST(request: Request) {
   if (isMonoJarMode()) {
     try {
       const commentCode = createJarCommentCode();
+      const paymentAmountKopiyky = await getUniqueJarPaymentAmount(pack.amountKopiyky);
       const topUp = await prisma.currencyTopUp.create({
         data: {
           userId: user.id,
           packageId: pack.id,
           amountTalers: pack.talers,
-          amountKopiyky: pack.amountKopiyky,
+          amountKopiyky: paymentAmountKopiyky,
           status: "pending",
-          monoPaymentUrl: getMonoJarPaymentUrl(pack.amountKopiyky),
+          monoPaymentUrl: getMonoJarPaymentUrl(paymentAmountKopiyky),
           jarCommentCode: commentCode
         }
       });

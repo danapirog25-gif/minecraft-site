@@ -41,13 +41,23 @@ async function checkJarStatementForPayment(topUp: TopUpForStatus): Promise<TopUp
   const to = Math.floor(Date.now() / 1000);
   const statementItems = await fetchMonoJarStatement(from, to);
 
-  const matchingItem = statementItems.find((item) => {
+  const matchingByComment = statementItems.find((item) => {
     if (!item.id || item.hold || item.currencyCode !== 980 || item.amount <= 0) {
       return false;
     }
 
     return extractJarCommentCode(item.comment) === topUp.jarCommentCode;
   });
+
+  const matchingItem =
+    matchingByComment ??
+    statementItems.find((item) => {
+      if (!item.id || item.hold || item.currencyCode !== 980 || item.amount <= 0) {
+        return false;
+      }
+
+      return item.amount === topUp.amountKopiyky;
+    });
 
   if (!matchingItem) {
     return null;

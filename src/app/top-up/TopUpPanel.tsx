@@ -54,9 +54,9 @@ export function TopUpPanel() {
     let cancelled = false;
     const topUpId = pendingJarPayment.topUpId;
 
-    async function checkTopUpStatus() {
+    async function checkTopUpStatus(checkProvider = false) {
       try {
-        const response = await fetch(`/api/wallet/top-up/${encodeURIComponent(topUpId)}`, {
+        const response = await fetch(`/api/wallet/top-up/${encodeURIComponent(topUpId)}${checkProvider ? "?check=1" : ""}`, {
           cache: "no-store"
         });
 
@@ -85,10 +85,12 @@ export function TopUpPanel() {
 
     void checkTopUpStatus();
     const intervalId = window.setInterval(() => void checkTopUpStatus(), 3000);
+    const providerCheckTimeoutId = window.setTimeout(() => void checkTopUpStatus(true), 45_000);
 
     return () => {
       cancelled = true;
       window.clearInterval(intervalId);
+      window.clearTimeout(providerCheckTimeoutId);
     };
   }, [pendingJarPayment, router]);
 
@@ -199,7 +201,7 @@ export function TopUpPanel() {
       ? "Оплату підтверджено. Талери вже зараховано на баланс."
       : pendingJarPayment?.status === "failed"
         ? "Платіж не зараховано. Перевір суму та код у коментарі або напиши адміну."
-        : "Очікуємо оплату. Якщо скануєш QR з телефона, залиш цю вкладку відкритою.";
+        : "Очікуємо оплату. Переказуй саме вказану суму, включно з копійками.";
 
   return (
     <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
@@ -240,7 +242,7 @@ export function TopUpPanel() {
                 Донат {formatHryvnias(pendingJarPayment.amountKopiyky)} за {formatTalers(pendingJarPayment.amountTalers)}
               </h3>
               <p className="mt-3 max-w-3xl leading-7 text-fog/70">
-                Скопіюй код і встав його у коментар до платежу. Без цього коду сайт не зможе привʼязати оплату до твого акаунта.
+                Переказуй саме цю суму: копійки потрібні, щоб сайт автоматично впізнав твій платіж. Код у коментарі лишається запасною привʼязкою.
               </p>
               <div
                 className={`mt-4 inline-flex items-center gap-2 rounded-sm border px-3 py-2 text-sm font-black ${
@@ -262,6 +264,9 @@ export function TopUpPanel() {
               </div>
             </div>
             <div className="rounded-sm border border-white/15 bg-black/25 p-4">
+              <p className="text-xs font-black uppercase text-fog/50">Точна сума до оплати</p>
+              <p className="mt-2 text-2xl font-black text-gold">{formatHryvnias(pendingJarPayment.amountKopiyky)}</p>
+              <div className="my-4 h-px bg-white/10" />
               <p className="text-xs font-black uppercase text-fog/50">Коментар до платежу</p>
               <p className="mt-2 font-mono text-2xl font-black tracking-wide text-gold">{pendingJarPayment.paymentComment}</p>
               {copyMessage ? <p className="mt-2 text-xs font-bold text-acid">{copyMessage}</p> : null}
