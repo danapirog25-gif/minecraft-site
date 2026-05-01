@@ -1,6 +1,7 @@
 import crypto from "crypto";
 
 const MONOBANK_API_URL = "https://api.monobank.ua";
+const MONOBANK_JAR_LINK_BASE_URL = "https://send.monobank.ua/jar";
 
 type BasketItem = {
   name: string;
@@ -31,6 +32,24 @@ export function getAppUrl(): string {
 
 export function isMonoMockMode(): boolean {
   return process.env.MONOBANK_MOCK_MODE === "true";
+}
+
+export function isMonoJarMode(): boolean {
+  return process.env.MONOBANK_JAR_MODE === "true";
+}
+
+export function getMonoJarSendId(): string | null {
+  return process.env.MONOBANK_JAR_SEND_ID || process.env.MONOBANK_JAR_ID || null;
+}
+
+export function getMonoJarPaymentUrl(): string {
+  const sendId = getMonoJarSendId();
+
+  if (!sendId) {
+    throw new Error("MONOBANK_JAR_SEND_ID is not configured");
+  }
+
+  return `${MONOBANK_JAR_LINK_BASE_URL}/${sendId}`;
 }
 
 export async function createMonoInvoice(input: MonoInvoiceInput): Promise<MonoInvoice> {

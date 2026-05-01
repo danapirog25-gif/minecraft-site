@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { formatTalers, getTopUpPackage } from "@/lib/currency";
-import { createMonoInvoice } from "@/lib/monobank";
+import { createMonoInvoice, getMonoJarPaymentUrl, isMonoJarMode } from "@/lib/monobank";
+import { createJarCommentCode } from "@/lib/monobank-jar";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/user-auth";
 
@@ -26,6 +27,34 @@ export async function POST(request: Request) {
   const pack = getTopUpPackage(parsed.data.packageId);
   if (!pack) {
     return NextResponse.json({ error: "Такий пакет поповнення недоступний" }, { status: 404 });
+  }
+
+  if (isMonoJarMode()) {
+    try {
+      const commentCode = createJarCommentCode();
+      const topUp = await prisma.currencyTopUp.create({
+        data: {
+          userId: user.id,
+          packageId: pack.id,
+          amountTalers: pack.talers,
+          amountKopiyky: pack.amountKopiyky,
+          status: "pending",
+          monoPaymentUrl: getMonoJarPaymentUrl(),
+          jarCommentCode: commentCode
+        }
+      });
+
+      return NextResponse.json({
+        topUpId: topUp.id,
+        paymentUrl: topUp.monoPaymentUrl,
+        paymentComment: commentCode,
+        amountKopiyky: topUp.amountKopiyky,
+        amountTalers: topUp.amountTalers
+      });
+    } catch (error) {
+      console.error("create monobank jar top-up failed", error);
+      return NextResponse.json({ error: "Не вдалося створити поповнення через банку" }, { status: 502 });
+    }
   }
 
   const topUp = await prisma.currencyTopUp.create({

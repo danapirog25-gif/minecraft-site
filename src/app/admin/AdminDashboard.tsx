@@ -6,6 +6,7 @@ import {
   Check,
   CheckSquare,
   Copy,
+  KeyRound,
   Loader2,
   LogOut,
   Pencil,
@@ -15,6 +16,7 @@ import {
   Save,
   Search,
   Square,
+  Trash2,
   Wallet,
   X
 } from "lucide-react";
@@ -35,13 +37,16 @@ type AdminDashboardProps = {
 
 type Order = {
   id: string;
+  userId: string | null;
   playerNickname: string;
   contact: string;
   email: string | null;
   products: string;
   totalAmount: number;
   status: string;
+  paymentMethod: string;
   monoInvoiceId: string | null;
+  monoPaymentUrl: string | null;
   createdAt: string;
   paidAt: string | null;
   issuedAt: string | null;
@@ -95,10 +100,13 @@ type WalletTransaction = {
 
 type CurrencyTopUp = {
   id: string;
+  userId: string;
   packageId: string;
   amountTalers: number;
   amountKopiyky: number;
   status: string;
+  monoInvoiceId: string | null;
+  monoPaymentUrl: string | null;
   createdAt: string;
   paidAt: string | null;
 };
@@ -109,8 +117,10 @@ type AdminUser = {
   minecraftNickname: string;
   contact: string | null;
   balance: number;
+  role: string;
   createdAt: string;
-  orders: Pick<Order, "id" | "products" | "totalAmount" | "status" | "createdAt">[];
+  updatedAt: string;
+  orders: Order[];
   currencyTopUps: CurrencyTopUp[];
   walletTransactions: WalletTransaction[];
 };
@@ -172,6 +182,10 @@ export default function AdminDashboard({ initialAuthenticated }: AdminDashboardP
   const [walletAmount, setWalletAmount] = useState("");
   const [walletReason, setWalletReason] = useState("");
   const [walletMessage, setWalletMessage] = useState<string | null>(null);
+  const [newUserPassword, setNewUserPassword] = useState("");
+  const [userActionMessage, setUserActionMessage] = useState<string | null>(null);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
+  const [isDeletingUser, setIsDeletingUser] = useState(false);
   const [selectedOrderIds, setSelectedOrderIds] = useState<string[]>([]);
   const [orderMessage, setOrderMessage] = useState<string | null>(null);
   const [isBatchIssuing, setIsBatchIssuing] = useState(false);
@@ -204,6 +218,13 @@ export default function AdminDashboard({ initialAuthenticated }: AdminDashboardP
     setSelectedOrderIds((current) =>
       current.includes(orderId) ? current.filter((id) => id !== orderId) : [...current, orderId]
     );
+  }
+
+  function selectUser(userId: string) {
+    setSelectedUserId(userId);
+    setWalletMessage(null);
+    setUserActionMessage(null);
+    setNewUserPassword("");
   }
 
   function selectAllVisibleOrders() {
@@ -294,7 +315,9 @@ export default function AdminDashboard({ initialAuthenticated }: AdminDashboardP
       setProducts(productsData.products ?? []);
       setSettings(settingsData.settings ?? { streamActive: false });
       setUsers(usersData.users ?? []);
-      setSelectedUserId((current) => current ?? usersData.users?.[0]?.id ?? null);
+      setSelectedUserId((current) =>
+        usersData.users?.some((user) => user.id === current) ? current : usersData.users?.[0]?.id ?? null
+      );
     } finally {
       setIsLoading(false);
     }
@@ -430,6 +453,9 @@ export default function AdminDashboard({ initialAuthenticated }: AdminDashboardP
     const data = (await response.json()) as { users: AdminUser[] };
     setUsers(data.users ?? []);
     setSelectedUserId(data.users?.[0]?.id ?? null);
+    setWalletMessage(null);
+    setUserActionMessage(null);
+    setNewUserPassword("");
   }
 
   async function adjustWallet(event: FormEvent<HTMLFormElement>) {
@@ -464,6 +490,78 @@ export default function AdminDashboard({ initialAuthenticated }: AdminDashboardP
     setWalletReason("");
     setWalletMessage("Баланс оновлено");
     await loadData(userQuery.trim());
+  }
+
+  async function resetUserPassword(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!selectedUser) {
+      return;
+    }
+
+    setUserActionMessage(null);
+    const password = newUserPassword.trim();
+    if (password.length < 8) {
+      setUserActionMessage("Новий пароль має містити мінімум 8 символів");
+      return;
+    }
+
+    setIsResettingPassword(true);
+    try {
+      const response = await fetch(`/api/admin/users/${selectedUser.id}/password`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password })
+      });
+
+      const data = (await response.json()) as { error?: string };
+      if (!response.ok) {
+        setUserActionMessage(data.error || "Не вдалося оновити пароль");
+        return;
+      }
+
+      setNewUserPassword("");
+      setUserActionMessage("Пароль оновлено. Передай новий пароль гравцю вручну.");
+      await loadData(userQuery.trim());
+    } finally {
+      setIsResettingPassword(false);
+    }
+  }
+
+  async function deleteSelectedUser() {
+    if (!selectedUser) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Видалити акаунт ${selectedUser.minecraftNickname}? Замовлення залишаться в адмінці, але баланс, поповнення і рух талерів цього акаунта буде видалено.`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setUserActionMessage(null);
+    setIsDeletingUser(true);
+    try {
+      const response = await fetch(`/api/admin/users/${selectedUser.id}`, {
+        method: "DELETE"
+      });
+
+      const data = (await response.json()) as { error?: string };
+      if (!response.ok) {
+        setUserActionMessage(data.error || "Не вдалося видалити акаунт");
+        return;
+      }
+
+      setSelectedUserId(null);
+      setWalletAmount("");
+      setWalletReason("");
+      setNewUserPassword("");
+      setUserActionMessage("Акаунт видалено");
+      await loadData(userQuery.trim());
+    } finally {
+      setIsDeletingUser(false);
+    }
   }
 
   if (!isAuthenticated) {
@@ -574,7 +672,7 @@ export default function AdminDashboard({ initialAuthenticated }: AdminDashboardP
                 <button
                   key={user.id}
                   type="button"
-                  onClick={() => setSelectedUserId(user.id)}
+                  onClick={() => selectUser(user.id)}
                   className={`rounded-sm border p-4 text-left transition hover:border-moss/40 hover:bg-moss/10 ${
                     selectedUser?.id === user.id ? "border-moss/40 bg-moss/10" : "border-white/10 bg-black/20"
                   }`}
@@ -609,6 +707,33 @@ export default function AdminDashboard({ initialAuthenticated }: AdminDashboardP
                 </div>
               </div>
 
+              <div className="mt-5 grid gap-3 border-t border-white/10 pt-5 md:grid-cols-2">
+                <div className="rounded-sm border border-white/10 bg-black/20 p-3">
+                  <p className="text-xs font-black uppercase text-fog/45">Email</p>
+                  <p className="mt-1 break-all text-sm font-bold text-white">{selectedUser.email}</p>
+                </div>
+                <div className="rounded-sm border border-white/10 bg-black/20 p-3">
+                  <p className="text-xs font-black uppercase text-fog/45">Контакт</p>
+                  <p className="mt-1 break-all text-sm font-bold text-white">{selectedUser.contact || "Не вказано"}</p>
+                </div>
+                <div className="rounded-sm border border-white/10 bg-black/20 p-3">
+                  <p className="text-xs font-black uppercase text-fog/45">Роль</p>
+                  <p className="mt-1 text-sm font-bold text-white">{selectedUser.role}</p>
+                </div>
+                <div className="rounded-sm border border-white/10 bg-black/20 p-3">
+                  <p className="text-xs font-black uppercase text-fog/45">ID акаунта</p>
+                  <p className="mt-1 break-all font-mono text-xs text-fog/75">{selectedUser.id}</p>
+                </div>
+                <div className="rounded-sm border border-white/10 bg-black/20 p-3">
+                  <p className="text-xs font-black uppercase text-fog/45">Створено</p>
+                  <p className="mt-1 text-sm font-bold text-white">{new Date(selectedUser.createdAt).toLocaleString("uk-UA")}</p>
+                </div>
+                <div className="rounded-sm border border-white/10 bg-black/20 p-3">
+                  <p className="text-xs font-black uppercase text-fog/45">Оновлено</p>
+                  <p className="mt-1 text-sm font-bold text-white">{new Date(selectedUser.updatedAt).toLocaleString("uk-UA")}</p>
+                </div>
+              </div>
+
               <form onSubmit={adjustWallet} className="mt-6 grid gap-3 border-t border-white/10 pt-5 md:grid-cols-[0.5fr_1fr_auto]">
                 <input
                   required
@@ -631,6 +756,42 @@ export default function AdminDashboard({ initialAuthenticated }: AdminDashboardP
               </form>
               {walletMessage ? <p className="mt-3 text-sm text-moss">{walletMessage}</p> : null}
 
+              <div className="mt-6 grid gap-4 border-t border-white/10 pt-5 xl:grid-cols-[1fr_auto]">
+                <form onSubmit={resetUserPassword} className="grid gap-3 md:grid-cols-[1fr_auto]">
+                  <label className="grid gap-2">
+                    <span className="text-sm font-black uppercase text-fog/50">Новий пароль</span>
+                    <input
+                      required
+                      type="text"
+                      minLength={8}
+                      maxLength={72}
+                      value={newUserPassword}
+                      onChange={(event) => setNewUserPassword(event.target.value)}
+                      placeholder="Мінімум 8 символів"
+                      className="rounded-sm border border-white/20 bg-black/30 px-4 py-3 outline-none transition focus:border-moss focus:shadow-glow"
+                    />
+                  </label>
+                  <button
+                    disabled={isResettingPassword}
+                    className="menu-button inline-flex items-center justify-center gap-2 self-end rounded-sm bg-moss px-4 py-3 font-black uppercase text-bunker transition hover:-translate-y-1 hover:bg-acid disabled:cursor-not-allowed disabled:opacity-70"
+                  >
+                    {isResettingPassword ? <Loader2 className="animate-spin" size={18} /> : <KeyRound size={18} />}
+                    Скинути пароль
+                  </button>
+                </form>
+
+                <button
+                  type="button"
+                  onClick={() => void deleteSelectedUser()}
+                  disabled={isDeletingUser}
+                  className="inline-flex items-center justify-center gap-2 self-end rounded-sm border border-blood/40 bg-blood/10 px-4 py-3 font-black uppercase text-red-100 transition hover:-translate-y-1 hover:bg-blood/20 disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  {isDeletingUser ? <Loader2 className="animate-spin" size={18} /> : <Trash2 size={18} />}
+                  Видалити акаунт
+                </button>
+              </div>
+              {userActionMessage ? <p className="mt-3 text-sm font-bold text-acid">{userActionMessage}</p> : null}
+
               <div className="mt-6 grid gap-5 xl:grid-cols-2">
                 <div>
                   <p className="text-sm font-black uppercase text-fog/50">Історія талерів</p>
@@ -646,7 +807,10 @@ export default function AdminDashboard({ initialAuthenticated }: AdminDashboardP
                             </span>
                           </div>
                           {transaction.adminNote ? <p className="mt-2 text-xs text-fog/50">{transaction.adminNote}</p> : null}
-                          <p className="mt-2 text-xs text-fog/45">{new Date(transaction.createdAt).toLocaleString("uk-UA")}</p>
+                          <p className="mt-2 text-xs text-fog/45">
+                            {new Date(transaction.createdAt).toLocaleString("uk-UA")} · Баланс після: {formatTalers(transaction.balanceAfter)}
+                          </p>
+                          <p className="mt-1 break-all font-mono text-[11px] text-fog/35">ID: {transaction.id}</p>
                         </div>
                       ))
                     ) : (
@@ -658,7 +822,7 @@ export default function AdminDashboard({ initialAuthenticated }: AdminDashboardP
                 <div>
                   <p className="text-sm font-black uppercase text-fog/50">Поповнення і покупки</p>
                   <div className="mt-3 grid gap-3">
-                    {selectedUser.currencyTopUps.slice(0, 4).map((topUp) => (
+                    {selectedUser.currencyTopUps.map((topUp) => (
                       <div key={topUp.id} className="rounded-sm border border-white/10 bg-black/20 p-3">
                         <div className="flex items-center justify-between gap-3">
                           <span className="text-sm font-bold text-white">Поповнення: {formatTalers(topUp.amountTalers)}</span>
@@ -667,9 +831,26 @@ export default function AdminDashboard({ initialAuthenticated }: AdminDashboardP
                         <p className="mt-1 text-xs text-fog/45">
                           {topUp.status} · {new Date(topUp.createdAt).toLocaleString("uk-UA")}
                         </p>
+                        <p className="mt-1 text-xs text-fog/45">
+                          {topUp.paidAt ? `Оплачено: ${new Date(topUp.paidAt).toLocaleString("uk-UA")}` : "Ще не оплачено"}
+                        </p>
+                        {topUp.monoInvoiceId ? (
+                          <p className="mt-1 break-all font-mono text-[11px] text-fog/35">monoInvoiceId: {topUp.monoInvoiceId}</p>
+                        ) : null}
+                        {topUp.monoPaymentUrl ? (
+                          <a
+                            href={topUp.monoPaymentUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="mt-2 inline-block break-all text-xs font-bold text-acid transition hover:text-white"
+                          >
+                            Посилання на оплату
+                          </a>
+                        ) : null}
+                        <p className="mt-1 break-all font-mono text-[11px] text-fog/35">ID: {topUp.id}</p>
                       </div>
                     ))}
-                    {selectedUser.orders.slice(0, 4).map((order) => {
+                    {selectedUser.orders.map((order) => {
                       const products = parseOrderProducts(order.products);
 
                       return (
@@ -683,6 +864,28 @@ export default function AdminDashboard({ initialAuthenticated }: AdminDashboardP
                           <p className="mt-1 text-xs text-fog/45">
                             {statusLabels[order.status] ?? order.status} · {new Date(order.createdAt).toLocaleString("uk-UA")}
                           </p>
+                          <p className="mt-1 text-xs text-fog/45">
+                            Контакт: {order.contact} {order.email ? `· ${order.email}` : ""}
+                          </p>
+                          <p className="mt-1 text-xs text-fog/45">
+                            Оплата: {order.paymentMethod}
+                            {order.paidAt ? ` · оплачено ${new Date(order.paidAt).toLocaleString("uk-UA")}` : ""}
+                            {order.issuedAt ? ` · видано ${new Date(order.issuedAt).toLocaleString("uk-UA")}` : ""}
+                          </p>
+                          {order.monoInvoiceId ? (
+                            <p className="mt-1 break-all font-mono text-[11px] text-fog/35">monoInvoiceId: {order.monoInvoiceId}</p>
+                          ) : null}
+                          {order.monoPaymentUrl ? (
+                            <a
+                              href={order.monoPaymentUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="mt-2 inline-block break-all text-xs font-bold text-acid transition hover:text-white"
+                            >
+                              Посилання на оплату
+                            </a>
+                          ) : null}
+                          <p className="mt-1 break-all font-mono text-[11px] text-fog/35">ID: {order.id}</p>
                         </div>
                       );
                     })}

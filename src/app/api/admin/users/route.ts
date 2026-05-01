@@ -24,41 +24,51 @@ export async function GET(request: Request) {
     orderBy: {
       createdAt: "desc"
     },
-    take: query ? 20 : 12,
     select: {
       id: true,
       email: true,
       minecraftNickname: true,
       contact: true,
       balance: true,
+      role: true,
       createdAt: true,
+      updatedAt: true,
       orders: {
         orderBy: { createdAt: "desc" },
-        take: 8,
         select: {
           id: true,
+          userId: true,
+          playerNickname: true,
+          contact: true,
+          email: true,
           products: true,
           totalAmount: true,
           status: true,
-          createdAt: true
+          paymentMethod: true,
+          monoInvoiceId: true,
+          monoPaymentUrl: true,
+          createdAt: true,
+          paidAt: true,
+          issuedAt: true
         }
       },
       currencyTopUps: {
         orderBy: { createdAt: "desc" },
-        take: 8,
         select: {
           id: true,
+          userId: true,
           packageId: true,
           amountTalers: true,
           amountKopiyky: true,
           status: true,
+          monoInvoiceId: true,
+          monoPaymentUrl: true,
           createdAt: true,
           paidAt: true
         }
       },
       walletTransactions: {
         orderBy: { createdAt: "desc" },
-        take: 16,
         select: {
           id: true,
           type: true,
