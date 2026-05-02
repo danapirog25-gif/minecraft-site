@@ -35,6 +35,13 @@ type AdminDashboardProps = {
   initialAuthenticated: boolean;
 };
 
+type AdminLoginResponse = {
+  ok?: boolean;
+  requiresCode?: boolean;
+  emailHint?: string;
+  error?: string;
+};
+
 type Order = {
   id: string;
   userId: string | null;
@@ -168,6 +175,10 @@ export default function AdminDashboard({ initialAuthenticated }: AdminDashboardP
   const [isAuthenticated, setIsAuthenticated] = useState(initialAuthenticated);
   const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState<string | null>(null);
+  const [authMessage, setAuthMessage] = useState<string | null>(null);
+  const [verificationRequired, setVerificationRequired] = useState(false);
+  const [verificationCode, setVerificationCode] = useState("");
+  const [isAuthSubmitting, setIsAuthSubmitting] = useState(false);
   const [orders, setOrders] = useState<Order[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [filter, setFilter] = useState("pending");
@@ -338,25 +349,51 @@ export default function AdminDashboard({ initialAuthenticated }: AdminDashboardP
   async function handleLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setAuthError(null);
+    setAuthMessage(null);
+    setIsAuthSubmitting(true);
 
-    const response = await fetch("/api/admin/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password })
-    });
+    try {
+      const response = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(verificationRequired ? { code: verificationCode.trim() } : { password })
+      });
+      const data = (await response.json().catch(() => ({}))) as AdminLoginResponse;
 
-    if (!response.ok) {
-      setAuthError("Неправильний пароль адміністратора");
-      return;
+      if (!response.ok) {
+        setAuthError(data.error || (verificationRequired ? "Неправильний код входу" : "Неправильний пароль адміністратора"));
+        return;
+      }
+
+      if (data.requiresCode) {
+        setPassword("");
+        setVerificationCode("");
+        setVerificationRequired(true);
+        setAuthMessage(
+          data.emailHint
+            ? `Код входу надіслано на ${data.emailHint}. Він діє 10 хвилин.`
+            : "Код входу надіслано на адмінську пошту. Він діє 10 хвилин."
+        );
+        return;
+      }
+
+      setPassword("");
+      setVerificationCode("");
+      setVerificationRequired(false);
+      setIsAuthenticated(true);
+    } finally {
+      setIsAuthSubmitting(false);
     }
-
-    setPassword("");
-    setIsAuthenticated(true);
   }
 
   async function handleLogout() {
     await fetch("/api/admin/logout", { method: "POST" });
     setIsAuthenticated(false);
+    setPassword("");
+    setVerificationCode("");
+    setVerificationRequired(false);
+    setAuthError(null);
+    setAuthMessage(null);
   }
 
   async function markIssued(orderId: string) {
@@ -642,20 +679,61 @@ export default function AdminDashboard({ initialAuthenticated }: AdminDashboardP
         <form onSubmit={handleLogin} className="panel pixel-corners w-full max-w-md p-6 shadow-glow">
           <p className="text-sm font-black uppercase tracking-wide text-moss">Admin access</p>
           <h1 className="mt-2 text-3xl font-black text-white">Адмін-панель</h1>
-          <p className="mt-3 leading-7 text-fog/70">Введіть пароль, щоб бачити замовлення й керувати товарами.</p>
-          <label className="mt-6 grid gap-2">
-            <span className="text-sm font-bold text-fog/70">Пароль</span>
-            <input
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              className="rounded-sm border border-white/20 bg-black/30 px-4 py-3 outline-none transition focus:border-moss focus:shadow-glow"
-            />
-          </label>
+          <p className="mt-3 leading-7 text-fog/70">
+            {verificationRequired
+              ? "Введіть одноразовий код із пошти, щоб завершити вхід."
+              : "Введіть пароль адміністратора. Якщо увімкнено 2FA, після цього прийде код на пошту."}
+          </p>
+          {verificationRequired ? (
+            <label className="mt-6 grid gap-2">
+              <span className="text-sm font-bold text-fog/70">Код із пошти</span>
+              <input
+                required
+                inputMode="numeric"
+                pattern="[0-9]{6}"
+                maxLength={6}
+                value={verificationCode}
+                onChange={(event) => setVerificationCode(event.target.value.replace(/\D/g, "").slice(0, 6))}
+                className="rounded-sm border border-white/20 bg-black/30 px-4 py-3 font-mono text-2xl font-black tracking-[0.35em] outline-none transition focus:border-moss focus:shadow-glow"
+                autoComplete="one-time-code"
+              />
+            </label>
+          ) : (
+            <label className="mt-6 grid gap-2">
+              <span className="text-sm font-bold text-fog/70">Пароль</span>
+              <input
+                required
+                type="password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                className="rounded-sm border border-white/20 bg-black/30 px-4 py-3 outline-none transition focus:border-moss focus:shadow-glow"
+                autoComplete="current-password"
+              />
+            </label>
+          )}
+          {authMessage ? <p className="mt-4 text-sm font-bold text-acid">{authMessage}</p> : null}
           {authError ? <p className="mt-4 text-sm text-red-200">{authError}</p> : null}
-          <button className="menu-button mt-6 w-full rounded-sm bg-moss px-5 py-3 font-black uppercase text-bunker transition hover:-translate-y-1 hover:bg-acid">
-            Увійти
+          <button
+            disabled={isAuthSubmitting}
+            className="menu-button mt-6 inline-flex w-full items-center justify-center gap-2 rounded-sm bg-moss px-5 py-3 font-black uppercase text-bunker transition hover:-translate-y-1 hover:bg-acid disabled:cursor-not-allowed disabled:opacity-70"
+          >
+            {isAuthSubmitting ? <Loader2 className="animate-spin" size={18} /> : <KeyRound size={18} />}
+            {verificationRequired ? "Підтвердити код" : "Увійти"}
           </button>
+          {verificationRequired ? (
+            <button
+              type="button"
+              onClick={() => {
+                setVerificationRequired(false);
+                setVerificationCode("");
+                setAuthError(null);
+                setAuthMessage(null);
+              }}
+              className="mt-3 w-full rounded-sm border border-white/20 bg-white/5 px-5 py-3 font-bold text-fog/70 transition hover:bg-white/10 hover:text-white"
+            >
+              Повернутися до пароля
+            </button>
+          ) : null}
         </form>
       </section>
     );

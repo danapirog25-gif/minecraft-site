@@ -6,6 +6,11 @@ type RegistrationVerificationEmail = {
   code: string;
 };
 
+type AdminLoginCodeEmail = {
+  emails: string[];
+  code: string;
+};
+
 type EmailDeliveryResult = {
   sent: boolean;
   devCode?: string;
@@ -24,24 +29,13 @@ function getSmtpSecure(): boolean {
   return getSmtpPort() === 465;
 }
 
-export async function sendRegistrationVerificationEmail({
-  email,
-  code
-}: RegistrationVerificationEmail): Promise<EmailDeliveryResult> {
-  const host = process.env.SMTP_HOST;
-  const from = process.env.SMTP_FROM || process.env.SMTP_USER;
+function getMailFrom(): string | undefined {
+  return process.env.SMTP_FROM || process.env.SMTP_USER;
+}
 
-  if (!host || !from) {
-    if (process.env.NODE_ENV === "production") {
-      throw new Error("SMTP is not configured");
-    }
-
-    console.info(`[email verification] Code for ${email}: ${code}`);
-    return { sent: false, devCode: code };
-  }
-
-  const transporter = nodemailer.createTransport({
-    host,
+function createTransporter() {
+  return nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
     port: getSmtpPort(),
     secure: getSmtpSecure(),
     auth:
@@ -52,6 +46,25 @@ export async function sendRegistrationVerificationEmail({
           }
         : undefined
   });
+}
+
+export async function sendRegistrationVerificationEmail({
+  email,
+  code
+}: RegistrationVerificationEmail): Promise<EmailDeliveryResult> {
+  const host = process.env.SMTP_HOST;
+  const from = getMailFrom();
+
+  if (!host || !from) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("SMTP is not configured");
+    }
+
+    console.info(`[email verification] Code for ${email}: ${code}`);
+    return { sent: false, devCode: code };
+  }
+
+  const transporter = createTransporter();
 
   await transporter.sendMail({
     from,
@@ -71,6 +84,51 @@ export async function sendRegistrationVerificationEmail({
         <p style="font-size: 30px; font-weight: 800; letter-spacing: 6px;">${code}</p>
         <p>Код діє ${EMAIL_VERIFICATION_TTL_MINUTES} хвилин.</p>
         <p style="color: #6b7280;">Якщо ти не реєструвався на Zombie Event Shop, просто проігноруй цей лист.</p>
+      </div>
+    `
+  });
+
+  return { sent: true };
+}
+
+export async function sendAdminLoginCodeEmail({ emails, code }: AdminLoginCodeEmail): Promise<EmailDeliveryResult> {
+  const host = process.env.SMTP_HOST;
+  const from = getMailFrom();
+  const uniqueEmails = Array.from(new Set(emails.map((email) => email.trim()).filter(Boolean)));
+
+  if (!uniqueEmails.length) {
+    throw new Error("Admin 2FA email is not configured");
+  }
+
+  if (!host || !from) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("SMTP is not configured");
+    }
+
+    console.info(`[admin 2fa] Code for ${uniqueEmails.join(", ")}: ${code}`);
+    return { sent: false, devCode: code };
+  }
+
+  const transporter = createTransporter();
+
+  await transporter.sendMail({
+    from,
+    to: uniqueEmails.join(", "),
+    subject: "Код входу в адмінку Zombie Event Shop",
+    text: [
+      "Привіт!",
+      "",
+      `Код входу в адмінку: ${code}`,
+      "",
+      "Код діє 10 хвилин. Якщо це був не ти, терміново зміни ADMIN_PASSWORD / ADMIN_PASSWORDS і ADMIN_SESSION_SECRET."
+    ].join("\n"),
+    html: `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #111827;">
+        <h1 style="font-size: 22px;">Zombie Event Shop Admin</h1>
+        <p>Код входу в адмінку:</p>
+        <p style="font-size: 30px; font-weight: 800; letter-spacing: 6px;">${code}</p>
+        <p>Код діє 10 хвилин.</p>
+        <p style="color: #6b7280;">Якщо це був не ти, терміново зміни ADMIN_PASSWORD / ADMIN_PASSWORDS і ADMIN_SESSION_SECRET.</p>
       </div>
     `
   });
