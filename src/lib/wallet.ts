@@ -99,7 +99,7 @@ export async function completeCurrencyTopUp(topUpId: string, receivedAmount?: nu
           type: "topup",
           amount: topUp.amountTalers,
           balanceAfter,
-          description: `Поповнення через monobank: ${formatTalers(topUp.amountTalers)}`,
+          description: `Поповнення балансу: ${formatTalers(topUp.amountTalers)}`,
           topUpId: topUp.id
         }
       });

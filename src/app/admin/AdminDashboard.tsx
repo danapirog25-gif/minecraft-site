@@ -190,8 +190,7 @@ export default function AdminDashboard({ initialAuthenticated }: AdminDashboardP
   const [selectedOrderIds, setSelectedOrderIds] = useState<string[]>([]);
   const [orderMessage, setOrderMessage] = useState<string | null>(null);
   const [isBatchIssuing, setIsBatchIssuing] = useState(false);
-  const [monoWebhookMessage, setMonoWebhookMessage] = useState<string | null>(null);
-  const [isRegisteringMonoWebhook, setIsRegisteringMonoWebhook] = useState(false);
+  const [issuingTopUpId, setIssuingTopUpId] = useState<string | null>(null);
 
   const visibleOrders = useMemo(() => {
     if (filter === "all") {
@@ -392,24 +391,6 @@ export default function AdminDashboard({ initialAuthenticated }: AdminDashboardP
     }
   }
 
-  async function registerMonoJarWebhook() {
-    setIsRegisteringMonoWebhook(true);
-    setMonoWebhookMessage(null);
-
-    try {
-      const response = await fetch("/api/admin/monobank/jar-webhook", {
-        method: "POST"
-      });
-      const data = (await response.json()) as { message?: string; error?: string };
-
-      setMonoWebhookMessage(
-        response.ok ? data.message || "Webhook банки monobank підв'язано" : data.error || "Не вдалося підв'язати webhook"
-      );
-    } finally {
-      setIsRegisteringMonoWebhook(false);
-    }
-  }
-
   function editProduct(product: Product) {
     setProductForm({
       id: product.id,
@@ -511,6 +492,28 @@ export default function AdminDashboard({ initialAuthenticated }: AdminDashboardP
     setWalletReason("");
     setWalletMessage("Баланс оновлено");
     await loadData(userQuery.trim());
+  }
+
+  async function issueTopUp(topUpId: string) {
+    setIssuingTopUpId(topUpId);
+    setWalletMessage(null);
+
+    try {
+      const response = await fetch(`/api/admin/top-ups/${topUpId}/issue`, {
+        method: "POST"
+      });
+      const data = (await response.json()) as { error?: string };
+
+      if (!response.ok) {
+        setWalletMessage(data.error || "Не вдалося видати талери");
+        return;
+      }
+
+      setWalletMessage("Талери видано і баланс оновлено");
+      await loadData(userQuery.trim());
+    } finally {
+      setIssuingTopUpId(null);
+    }
   }
 
   async function resetUserPassword(event: FormEvent<HTMLFormElement>) {
@@ -712,30 +715,20 @@ export default function AdminDashboard({ initialAuthenticated }: AdminDashboardP
         </div>
       </div>
 
-      <div className="mt-4 rounded-sm border border-ward/30 bg-ward/10 p-5">
+      <div className="mt-4 rounded-sm border border-gold/30 bg-gold/10 p-5">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex items-start gap-3">
-            <div className="item-cube grid h-12 w-12 place-items-center border border-ward/30 bg-ward/10 text-ward">
-              <RefreshCw size={24} />
+            <div className="item-cube grid h-12 w-12 place-items-center border border-gold/30 bg-gold/10 text-gold">
+              <Wallet size={24} />
             </div>
             <div>
-              <p className="text-sm font-black uppercase tracking-wide text-fog/60">Monobank банка</p>
-              <h2 className="mt-1 text-2xl font-black text-white">Webhook поповнень</h2>
+              <p className="text-sm font-black uppercase tracking-wide text-fog/60">Ручні поповнення</p>
+              <h2 className="mt-1 text-2xl font-black text-white">Перевір коментар і видай талери</h2>
               <p className="mt-2 leading-7 text-fog/70">
-                Натисни після оновлення env на Vercel, щоб monobank почав надсилати події по банці на цей сайт.
+                Гравець має вписати в коментарі до платежу свій нік із сайту. Після перевірки платежу відкрий гравця нижче й натисни &quot;Видати талери&quot; біля потрібного поповнення.
               </p>
-              {monoWebhookMessage ? <p className="mt-2 text-sm font-bold text-acid">{monoWebhookMessage}</p> : null}
             </div>
           </div>
-          <button
-            type="button"
-            onClick={() => void registerMonoJarWebhook()}
-            disabled={isRegisteringMonoWebhook}
-            className="menu-button inline-flex items-center justify-center gap-2 rounded-sm bg-ward px-5 py-3 font-black uppercase text-bunker transition hover:-translate-y-1 hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70"
-          >
-            {isRegisteringMonoWebhook ? <Loader2 className="animate-spin" size={18} /> : <RefreshCw size={18} />}
-            Підв&apos;язати webhook
-          </button>
         </div>
       </div>
 
@@ -928,34 +921,51 @@ export default function AdminDashboard({ initialAuthenticated }: AdminDashboardP
                 <div>
                   <p className="text-sm font-black uppercase text-fog/50">Поповнення і покупки</p>
                   <div className="mt-3 grid gap-3">
-                    {selectedUser.currencyTopUps.map((topUp) => (
-                      <div key={topUp.id} className="rounded-sm border border-white/10 bg-black/20 p-3">
-                        <div className="flex items-center justify-between gap-3">
-                          <span className="text-sm font-bold text-white">Поповнення: {formatTalers(topUp.amountTalers)}</span>
-                          <span className="text-sm font-black text-gold">{formatHryvnias(topUp.amountKopiyky)}</span>
+                    {selectedUser.currencyTopUps.map((topUp) => {
+                      const topUpStatusLabel =
+                        topUp.status === "pending" ? "Очікує ручної видачі" : topUp.status === "paid" ? "Видано" : topUp.status;
+                      const canIssueTopUp = topUp.status === "pending";
+
+                      return (
+                        <div key={topUp.id} className="rounded-sm border border-white/10 bg-black/20 p-3">
+                          <div className="flex items-center justify-between gap-3">
+                            <span className="text-sm font-bold text-white">Поповнення: {formatTalers(topUp.amountTalers)}</span>
+                            <span className="text-sm font-black text-gold">{formatHryvnias(topUp.amountKopiyky)}</span>
+                          </div>
+                          <p className="mt-1 text-xs text-fog/45">
+                            {topUpStatusLabel} · {new Date(topUp.createdAt).toLocaleString("uk-UA")}
+                          </p>
+                          <p className="mt-1 text-xs text-fog/45">
+                            {topUp.paidAt ? `Видано: ${new Date(topUp.paidAt).toLocaleString("uk-UA")}` : "Ще не видано"}
+                          </p>
+                          {canIssueTopUp ? (
+                            <button
+                              type="button"
+                              onClick={() => void issueTopUp(topUp.id)}
+                              disabled={issuingTopUpId === topUp.id}
+                              className="mt-3 inline-flex items-center gap-2 rounded-sm bg-moss px-3 py-2 text-xs font-black uppercase text-bunker transition hover:bg-acid disabled:cursor-not-allowed disabled:opacity-70"
+                            >
+                              {issuingTopUpId === topUp.id ? <Loader2 className="animate-spin" size={14} /> : <Check size={14} />}
+                              Видати талери
+                            </button>
+                          ) : null}
+                          {topUp.monoInvoiceId ? (
+                            <p className="mt-1 break-all font-mono text-[11px] text-fog/35">monoInvoiceId: {topUp.monoInvoiceId}</p>
+                          ) : null}
+                          {topUp.monoPaymentUrl ? (
+                            <a
+                              href={topUp.monoPaymentUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="mt-2 inline-block break-all text-xs font-bold text-acid transition hover:text-white"
+                            >
+                              Посилання на оплату
+                            </a>
+                          ) : null}
+                          <p className="mt-1 break-all font-mono text-[11px] text-fog/35">ID: {topUp.id}</p>
                         </div>
-                        <p className="mt-1 text-xs text-fog/45">
-                          {topUp.status} · {new Date(topUp.createdAt).toLocaleString("uk-UA")}
-                        </p>
-                        <p className="mt-1 text-xs text-fog/45">
-                          {topUp.paidAt ? `Оплачено: ${new Date(topUp.paidAt).toLocaleString("uk-UA")}` : "Ще не оплачено"}
-                        </p>
-                        {topUp.monoInvoiceId ? (
-                          <p className="mt-1 break-all font-mono text-[11px] text-fog/35">monoInvoiceId: {topUp.monoInvoiceId}</p>
-                        ) : null}
-                        {topUp.monoPaymentUrl ? (
-                          <a
-                            href={topUp.monoPaymentUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="mt-2 inline-block break-all text-xs font-bold text-acid transition hover:text-white"
-                          >
-                            Посилання на оплату
-                          </a>
-                        ) : null}
-                        <p className="mt-1 break-all font-mono text-[11px] text-fog/35">ID: {topUp.id}</p>
-                      </div>
-                    ))}
+                      );
+                    })}
                     {selectedUser.orders.map((order) => {
                       const products = parseOrderProducts(order.products);
 

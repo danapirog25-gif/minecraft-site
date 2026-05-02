@@ -29,7 +29,7 @@ export default async function PaymentSuccessPage({ searchParams }: PaymentSucces
           {topUp && topUpCredited
             ? `${formatTalers(topUp.amountTalers)} додано на баланс акаунта. Тепер можна купувати набори, ресурси й суперпредмети.`
             : topUp
-              ? "Monobank підтверджує платіж. Баланс оновиться автоматично після webhook."
+              ? "Заявку на поповнення отримано. Баланс оновиться після ручної перевірки адміністратором."
             : "Платіж успішний. Перейдіть у кабінет, щоб перевірити статус."}
         </p>
         <Link

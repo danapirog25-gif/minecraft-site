@@ -12,13 +12,13 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Купити талери | Zombie Event Shop",
-  description: "Поповнення балансу талерів через monobank для покупок у Minecraft-магазині івенту."
+  description: "Ручне поповнення балансу талерів для покупок у Minecraft-магазині івенту."
 };
 
 const statusLabels: Record<string, string> = {
-  pending: "Очікує оплату",
-  paid: "Зараховано",
-  failed: "Помилка оплати"
+  pending: "Очікує ручної видачі",
+  paid: "Видано",
+  failed: "Скасовано"
 };
 
 const statusClasses: Record<string, string> = {
@@ -47,7 +47,7 @@ export default async function TopUpPage() {
           <p className="text-sm font-black uppercase tracking-wide text-moss">Поповнення балансу</p>
           <h1 className="voxel-title mt-3 text-4xl font-black uppercase text-white">Купити талери</h1>
           <p className="mt-4 max-w-3xl text-lg leading-8 text-fog/70">
-            Талери — внутрішня валюта магазину. Спочатку поповни баланс через monobank, а потім купуй набори, ресурси й суперпредмети без окремих оплат за кожен товар.
+            Талери — внутрішня валюта магазину. Обери пакет, оплати його вручну й у коментарі до платежу впиши нікнейм із сайту, щоб адмін знав, кому видати валюту.
           </p>
         </div>
         <div className="panel rounded-sm border-gold/30 p-5 shadow-goldglow">
@@ -68,18 +68,18 @@ export default async function TopUpPage() {
       <div className="mt-10 grid gap-5 md:grid-cols-3">
         <div className="panel rounded-sm p-5">
           <CreditCard className="text-moss" size={26} />
-          <h2 className="mt-4 text-xl font-black text-white">Оплата через monobank</h2>
-          <p className="mt-3 leading-7 text-fog/65">Після успішної оплати талери автоматично додаються на баланс акаунта.</p>
+          <h2 className="mt-4 text-xl font-black text-white">Ручна оплата</h2>
+          <p className="mt-3 leading-7 text-fog/65">Створи заявку, перекинь точну суму й не забудь коментар до платежу.</p>
         </div>
         <div className="panel rounded-sm p-5">
           <ShieldCheck className="text-gold" size={26} />
-          <h2 className="mt-4 text-xl font-black text-white">Ручна видача адміном</h2>
-          <p className="mt-3 leading-7 text-fog/65">Адміністратор може додати або списати талери через адмін-панель.</p>
+          <h2 className="mt-4 text-xl font-black text-white">Коментар = нікнейм</h2>
+          <p className="mt-3 leading-7 text-fog/65">У коментарі має бути той самий Minecraft-нік, що показаний у твоєму акаунті на сайті.</p>
         </div>
         <div className="panel rounded-sm p-5">
           <Clock className="text-ward" size={26} />
-          <h2 className="mt-4 text-xl font-black text-white">Покупки 24/7</h2>
-          <p className="mt-3 leading-7 text-fog/65">Усі придбані товари будуть видані після старту стріму та відкриття сервера.</p>
+          <h2 className="mt-4 text-xl font-black text-white">До 24 годин</h2>
+          <p className="mt-3 leading-7 text-fog/65">Талери видаються вручну протягом 24 годин, бо адмін поки не зробив нормальну оплату.</p>
         </div>
       </div>
 
