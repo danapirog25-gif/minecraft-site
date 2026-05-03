@@ -5,6 +5,7 @@ import { CartNavLink } from "@/components/CartNavLink";
 import { ItemIcon } from "@/components/ItemIcon";
 import { MobileMenu } from "@/components/MobileMenu";
 import { formatTalers } from "@/lib/currency";
+import { eventInfo } from "@/lib/event-info";
 import { getCurrentUser } from "@/lib/user-auth";
 import "./globals.css";
 
@@ -126,7 +127,7 @@ export default async function RootLayout({
             <div>
               <p className="text-sm font-black uppercase tracking-wide text-moss">Спільнота</p>
               <div className="mt-4 grid gap-3 text-sm text-fog/70">
-                <a className="inline-flex items-center gap-2 transition hover:text-white" href="https://discord.gg/" target="_blank" rel="noreferrer">
+                <a className="inline-flex items-center gap-2 transition hover:text-white" href={eventInfo.discordUrl} target="_blank" rel="noreferrer">
                   <MessageCircle size={16} className="text-moss" />
                   Discord
                 </a>

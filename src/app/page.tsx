@@ -12,6 +12,7 @@ import {
   UserRound
 } from "lucide-react";
 import { ItemIcon } from "@/components/ItemIcon";
+import { eventInfo } from "@/lib/event-info";
 
 const sides = [
   {
@@ -126,7 +127,7 @@ export default function HomePage() {
                 Поповнити баланс
               </Link>
               <a
-                href="https://discord.gg/"
+                href={eventInfo.discordUrl}
                 target="_blank"
                 rel="noreferrer"
                 className="menu-button inline-flex items-center justify-center gap-2 rounded-sm border border-blood/40 bg-blood/10 px-7 py-4 text-base font-black uppercase text-white transition hover:-translate-y-1 hover:bg-blood/20"

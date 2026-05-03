@@ -1,8 +1,21 @@
+const defaultDiscordUrl = "https://discord.gg/SKKDGGhdGG";
+
+function getDiscordUrl(value: string | undefined) {
+  const url = value?.trim();
+  const normalizedUrl = url?.replace(/\/+$/, "").toLowerCase();
+
+  if (!url || normalizedUrl === "https://discord.gg" || normalizedUrl === "https://discord.com") {
+    return defaultDiscordUrl;
+  }
+
+  return url;
+}
+
 export const eventInfo = {
   startAt: process.env.NEXT_PUBLIC_EVENT_START_AT ?? "",
   serverAddress: process.env.NEXT_PUBLIC_MINECRAFT_SERVER ?? "Буде оголошено перед стартом",
   streamUrl: process.env.NEXT_PUBLIC_STREAM_URL ?? "https://www.youtube.com/",
-  discordUrl: process.env.NEXT_PUBLIC_DISCORD_URL ?? "https://discord.gg/",
+  discordUrl: getDiscordUrl(process.env.NEXT_PUBLIC_DISCORD_URL),
   telegramUrl: process.env.NEXT_PUBLIC_TELEGRAM_URL ?? "https://t.me/",
   supportEmail: process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "waife9260@gmail.com"
 } as const;
