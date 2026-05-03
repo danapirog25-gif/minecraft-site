@@ -178,6 +178,13 @@ const adminNetheriteAxe = give("netherite_axe", 1, enchantments([
 const adminBow = give("bow", 1, adminBowNbt);
 const adminAllEffectsPotionNbt = `{CustomPotionColor:16766720,display:{Name:'{"text":"Адмінське зілля всіх бафів","color":"gold","italic":false}'},CustomPotionEffects:[{Id:1b,Amplifier:4b,Duration:12000},{Id:3b,Amplifier:4b,Duration:12000},{Id:5b,Amplifier:4b,Duration:12000},{Id:6b,Amplifier:4b,Duration:1},{Id:8b,Amplifier:4b,Duration:12000},{Id:10b,Amplifier:4b,Duration:12000},{Id:11b,Amplifier:4b,Duration:12000},{Id:12b,Amplifier:0b,Duration:12000},{Id:13b,Amplifier:0b,Duration:12000},{Id:16b,Amplifier:0b,Duration:12000},{Id:21b,Amplifier:4b,Duration:12000},{Id:22b,Amplifier:4b,Duration:12000},{Id:23b,Amplifier:4b,Duration:1200},{Id:26b,Amplifier:4b,Duration:12000},{Id:28b,Amplifier:0b,Duration:12000},{Id:29b,Amplifier:0b,Duration:12000},{Id:30b,Amplifier:0b,Duration:12000},{Id:32b,Amplifier:4b,Duration:12000}]}`;
 
+function trackingCompassNbt(name: string, color: string, target: string): string {
+  return `{display:{Name:'{"text":"${name}","color":"${color}","italic":false}',Lore:['{"text":"Показує напрямок до цілі: ${target}.","color":"gray","italic":false}','{"text":"Працює через серверний плагін або адмінську систему.","color":"dark_gray","italic":false}']},Enchantments:[{id:"minecraft:unbreaking",lvl:1s}],HideFlags:1}`;
+}
+
+const humansZombieCompass = give("compass", 1, trackingCompassNbt("Компас на зомбі", "red", "найближчого зомбі"));
+const zombiesHumanCompass = give("compass", 1, trackingCompassNbt("Компас на людей", "green", "найближчу людину"));
+
 const basicBlocks = [give("cobblestone", 64), give("oak_planks", 64), give("torch", 32)];
 const survivalBlocks = [
   give("cobblestone", 128),
@@ -1688,6 +1695,44 @@ const products: SeedProduct[] = [
     ],
     benefits: ["Найдорожчий набір магазину за внутрішню валюту.", "Усередині survival-неможливі предмети з адмін-рівнями чар."],
     itemsCommands: [...adminNetheriteArmorSet(), adminNetheriteSword, adminNetheriteAxe, adminBow, give("shield"), give("arrow", 128), give("golden_apple", 16), give("enchanted_golden_apple", 2), give("totem_of_undying", 2), give("ender_pearl", 16), give("potion", 4, `{Potion:"minecraft:strength"}`), give("potion", 4, `{Potion:"minecraft:swiftness"}`), give("potion", 4, `{Potion:"minecraft:regeneration"}`), give("cooked_beef", 64), give("cobblestone", 128), give("obsidian", 64), give("beacon"), give("netherite_ingot", 4)]
+  },
+  {
+    name: "Компас людей: пошук зомбі",
+    slug: "humans-zombie-compass",
+    description: "Івент-компас для команди людей, який показує напрямок до найближчого зомбі під час активної фази полювання.",
+    price: 150,
+    category: "event_perks",
+    team: "humans",
+    contents: [
+      "Компас на зомбі — 1 шт.",
+      "Позначка compass_tracks_zombies для серверного плагіна — 1 гравець",
+      "Діє тільки для команди людей"
+    ],
+    benefits: ["Допомагає людям швидше знаходити заражених і не бігати картою навмання.", "Дає інформаційну перевагу без додаткової броні, шкоди чи ресурсів."],
+    itemsCommands: [
+      humansZombieCompass,
+      `/tag {nickname} add compass_tracks_zombies`,
+      `/tellraw {nickname} {"text":"Компас на зомбі активовано. Тримай його в інвентарі під час полювання.","color":"red"}`
+    ]
+  },
+  {
+    name: "Компас зомбі: пошук людей",
+    slug: "zombies-human-compass",
+    description: "Івент-компас для команди зомбі, який показує напрямок до найближчої людини під час штурму або пошуку бази.",
+    price: 150,
+    category: "event_perks",
+    team: "zombies",
+    contents: [
+      "Компас на людей — 1 шт.",
+      "Позначка compass_tracks_humans для серверного плагіна — 1 гравець",
+      "Діє тільки для команди зомбі"
+    ],
+    benefits: ["Допомагає зомбі знаходити людей, які ховаються або відходять від основної бази.", "Підсилює пошук і тиск, але не додає прямої бойової сили."],
+    itemsCommands: [
+      zombiesHumanCompass,
+      `/tag {nickname} add compass_tracks_humans`,
+      `/tellraw {nickname} {"text":"Компас на людей активовано. Використовуй його для пошуку виживших.","color":"green"}`
+    ]
   },
   {
     name: "Збереження інвентарю на весь івент",

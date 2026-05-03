@@ -21,6 +21,7 @@ const textureByKind: Record<string, string> = {
   bow: "bow.png",
   coal: "coal.png",
   cobblestone: "cobblestone.png",
+  compass: "compass.png",
   diamond: "diamond.png",
   diamond_chestplate: "diamond_chestplate.png",
   diamond_sword: "diamond_sword.png",
@@ -208,6 +209,8 @@ const productKindBySlug: Record<string, string> = {
   "god-engineer-kit": "redstone",
   "god-raider-kit": "netherite_sword",
   "full-god-kit": "netherite_chestplate",
+  "humans-zombie-compass": "compass",
+  "zombies-human-compass": "compass",
   "private-access": "wooden_axe"
 };
 
@@ -231,6 +234,7 @@ export function itemKindFromProduct(product: { name: string; slug: string; categ
   }
 
   if (product.slug === "private-access" || value.includes("приват")) return "wooden_axe";
+  if (value.includes("компас") || value.includes("compass")) return "compass";
   if (value.includes("зберіган") || value.includes("інвентар") || value.includes("inventory")) return "beacon";
   if (value.includes("друге життя") || value.includes("second-life")) return "totem_of_undying";
   if (product.slug === "full-god-kit" || value.includes("god kit") || value.includes("набір бога")) return "netherite_chestplate";
