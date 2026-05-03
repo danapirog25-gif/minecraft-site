@@ -21,7 +21,6 @@ import {
   eventInfo,
   getEventStartIso,
   humanVictoryRewards,
-  killRewardTalers,
   zombieVictoryRewardTalers
 } from "@/lib/event-info";
 import { formatTalers } from "@/lib/currency";
@@ -154,7 +153,7 @@ export default async function EventPage() {
           <section className="panel rounded-sm p-6">
             <p className="text-sm font-black uppercase tracking-wide text-gold">Нагороди талерами</p>
             <h2 className="mt-3 text-3xl font-black text-white">Виплати після перемоги</h2>
-            <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
               <div className="rounded-sm border border-blood/35 bg-blood/10 p-4">
                 <Skull className="text-blood" size={24} />
                 <p className="mt-3 font-black text-white">Перемагають зомбі</p>
@@ -168,15 +167,6 @@ export default async function EventPage() {
                 <p className="mt-3 font-black text-white">Перемагають люди</p>
                 <p className="mt-2 leading-7 text-fog/70">
                   Талери отримують тільки виживші. Чим менше виживших, тим більша нагорода кожному.
-                </p>
-              </div>
-              <div className="rounded-sm border border-gold/35 bg-gold/10 p-4 sm:col-span-2 xl:col-span-1">
-                <Coins className="text-gold" size={24} />
-                <p className="mt-3 font-black text-white">Бонус за вбивства</p>
-                <p className="mt-2 leading-7 text-fog/70">
-                  За кожне підтверджене вбивство додається{" "}
-                  <span className="font-black text-gold">+{formatTalers(killRewardTalers)}</span>. Після івенту
-                  адміністрація підраховує вбивства й видає талери на баланс акаунта, якщо гравець зареєстрований на сайті.
                 </p>
               </div>
             </div>

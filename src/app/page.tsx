@@ -2,14 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
-  BadgeCheck,
-  CreditCard,
   Info,
   MessageCircle,
   Shield,
-  ShoppingCart,
-  Skull,
-  UserRound
+  Skull
 } from "lucide-react";
 import { ItemIcon } from "@/components/ItemIcon";
 import { eventInfo } from "@/lib/event-info";
@@ -35,13 +31,6 @@ const sides = [
     accentBg: "bg-blood/10",
     className: "danger-frame"
   }
-];
-
-const flow = [
-  { title: "Поповнюєш баланс", text: "Створюєш заявку, оплачуєш вручну й пишеш нік у коментарі.", icon: CreditCard },
-  { title: "Обираєш товар", text: "Старт, шалкер, суперпредмет або ресурс.", icon: ShoppingCart },
-  { title: "Підтверджуєш нік", text: "Замовлення привʼязується до Minecraft-ніка в акаунті.", icon: UserRound },
-  { title: "Отримуєш на стрімі", text: "Видача після старту стріму та відкриття сервера.", icon: BadgeCheck }
 ];
 
 const popular = [
@@ -171,31 +160,6 @@ export default function HomePage() {
             </article>
           );
         })}
-      </section>
-
-      <section className="shell pb-16 pt-4 sm:pb-20 lg:pt-6">
-        <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
-          <div>
-            <p className="text-sm font-black uppercase tracking-wide text-moss">Як це працює</p>
-            <h2 className="mt-3 text-4xl font-black text-white">4 кроки до івенту</h2>
-          </div>
-        </div>
-
-        <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {flow.map((step, index) => {
-            const Icon = step.icon;
-            return (
-              <article key={step.title} className="panel shop-card rounded-sm p-6 hover:border-moss/40 hover:shadow-glow">
-                <div className="flex items-center justify-between">
-                  <Icon className="text-moss" size={28} />
-                  <span className="font-display text-2xl text-fog/20">0{index + 1}</span>
-                </div>
-                <h3 className="mt-5 text-xl font-black text-white">{step.title}</h3>
-                <p className="mt-3 leading-7 text-fog/60">{step.text}</p>
-              </article>
-            );
-          })}
-        </div>
       </section>
 
       <section className="shell pb-16 pt-8 sm:pb-20 lg:pt-10">

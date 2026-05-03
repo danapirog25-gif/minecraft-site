@@ -26,7 +26,6 @@ export const eventEndConditions = [
 ] as const;
 
 export const zombieVictoryRewardTalers = 120;
-export const killRewardTalers = 10;
 
 export const humanVictoryRewards = [
   { survivors: 1, reward: 500 },

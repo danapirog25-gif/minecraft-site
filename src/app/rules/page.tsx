@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, ShieldCheck, Skull, UsersRound } from "lucide-react";
-import { eventEndConditions, killRewardTalers, zombieVictoryRewardTalers } from "@/lib/event-info";
+import { eventEndConditions, zombieVictoryRewardTalers } from "@/lib/event-info";
 import { formatTalers } from "@/lib/currency";
 
 export const metadata: Metadata = {
@@ -20,8 +20,6 @@ const rules = [
   eventEndConditions[1],
   `За перемогу зомбі всі активні учасники отримують по ${formatTalers(zombieVictoryRewardTalers)}.`,
   "За перемогу людей талери отримують тільки виживші за таблицею на сторінці івенту.",
-  `За кожне підтверджене вбивство гравець отримує +${formatTalers(killRewardTalers)}.`,
-  "Бонуси за вбивства підраховуються після завершення івенту й видаються на баланс сайту тільки зареєстрованим гравцям.",
   "Заборонено використовувати чіти, баги, дюпи та сторонні програми.",
   "Заборонена токсичність, образи та заважання проведенню івенту.",
   "Ресурси видаються після підтвердження оплати.",
