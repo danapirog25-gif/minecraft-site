@@ -41,6 +41,9 @@ const textureByKind: Record<string, string> = {
   golden_apple: "golden_apple.png",
   enchanted_golden_apple: "enchanted_golden_apple.png",
   diamond_axe: "diamond_axe.png",
+  diamond_boots: "diamond_boots.png",
+  diamond_helmet: "diamond_helmet.png",
+  diamond_leggings: "diamond_leggings.png",
   diamond_pickaxe: "diamond_pickaxe.png",
   diamond_shovel: "diamond_shovel.png",
   dirt: "dirt.png",
@@ -52,7 +55,10 @@ const textureByKind: Record<string, string> = {
   glowstone_dust: "glowstone_dust.png",
   gravel: "gravel.png",
   gunpowder: "gunpowder.png",
+  iron_boots: "iron_boots.png",
   iron_chestplate: "iron_chestplate.png",
+  iron_helmet: "iron_helmet.png",
+  iron_leggings: "iron_leggings.png",
   iron_axe: "iron_axe.png",
   iron_ingot: "iron_ingot.png",
   iron_pickaxe: "iron_pickaxe.png",
@@ -63,8 +69,11 @@ const textureByKind: Record<string, string> = {
   lava_bucket: "lava_bucket.png",
   leather: "leather.png",
   milk_bucket: "milk_bucket.png",
+  netherite_boots: "netherite_boots.png",
   netherite_chestplate: "netherite_chestplate.png",
+  netherite_helmet: "netherite_helmet.png",
   netherite_ingot: "netherite_ingot.png",
+  netherite_leggings: "netherite_leggings.png",
   netherite_sword: "netherite_sword.png",
   netherrack: "netherrack.png",
   oak_planks: "oak_planks.png",
@@ -287,6 +296,7 @@ export function itemKindFromProduct(product: { name: string; slug: string; categ
 export function itemKindFromText(text: string, fallback = "shulker_box"): string {
   const value = text.toLowerCase();
   const has = (...needles: string[]) => needles.some((needle) => value.includes(needle));
+  const armorMaterial = has("незерит", "netherite") ? "netherite" : has("алмаз", "diamond") ? "diamond" : "iron";
 
   if (has("зачароване золоте яблу", "зачаровані золоті яблу", "enchanted golden apple", "enchanted_golden_apple")) return "enchanted_golden_apple";
   if (has("золоте яблу", "золоті яблу", "golden apple", "golden_apple")) return "golden_apple";
@@ -324,6 +334,10 @@ export function itemKindFromText(text: string, fallback = "shulker_box"): string
   if (has("запальнич", "flint and steel", "flint_and_steel")) return "flint_and_steel";
   if (has("вудк", "fishing rod", "fishing_rod")) return "fishing_rod";
 
+  if (has("шолом", "helmet")) return `${armorMaterial}_helmet`;
+  if (has("нагрудник", "chestplate")) return `${armorMaterial}_chestplate`;
+  if (has("понож", "leggings")) return `${armorMaterial}_leggings`;
+  if (has("чобот", "boots")) return `${armorMaterial}_boots`;
   if (has("брон", "сет", "нагруд", "шолом", "понож", "чобот", "armor", "chestplate")) {
     if (has("незерит", "netherite")) return "netherite_chestplate";
     if (has("алмаз", "diamond")) return "diamond_chestplate";
