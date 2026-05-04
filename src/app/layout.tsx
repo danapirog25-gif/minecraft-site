@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { MessageCircle, Send, ShieldCheck, UserRound } from "lucide-react";
 import { CartNavLink } from "@/components/CartNavLink";
@@ -21,10 +22,18 @@ export const metadata: Metadata = {
   metadataBase: getMetadataBase(),
   title: "Zombie Event Shop",
   description: "Dark-gaming магазин добровільних наборів для безкоштовного Minecraft-івенту Зомбі проти людей.",
+  icons: {
+    icon: [
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/zombie-event-icon.png", sizes: "512x512", type: "image/png" }
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }]
+  },
   openGraph: {
     title: "Zombie Event Shop",
     description: "Набори, шалкери, ресурси й талери для Minecraft-івенту Зомбі проти людей.",
-    images: ["/zombie-event-hero.png"],
+    images: ["/zombie-event-icon.png"],
     locale: "uk_UA",
     type: "website"
   },
@@ -32,7 +41,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Zombie Event Shop",
     description: "Minecraft-крамниця для івенту Зомбі проти людей.",
-    images: ["/zombie-event-hero.png"]
+    images: ["/zombie-event-icon.png"]
   }
 };
 
@@ -49,8 +58,15 @@ export default async function RootLayout({
         <header className="sticky top-0 z-40 border-b border-white/10 bg-bunker/90 backdrop-blur-xl">
           <nav className="shell flex min-h-16 items-center justify-between gap-4 py-3">
             <Link href="/" className="group flex items-center gap-3">
-              <span className="item-cube grid h-11 w-11 place-items-center border border-moss/40 bg-moss/10 text-base font-black text-acid shadow-glow transition group-hover:border-acid">
-                ZP
+              <span className="item-cube grid h-11 w-11 overflow-hidden border border-moss/40 bg-black/35 shadow-glow transition group-hover:border-acid">
+                <Image
+                  src="/zombie-event-icon.png"
+                  alt=""
+                  width={44}
+                  height={44}
+                  priority
+                  className="h-full w-full object-cover"
+                />
               </span>
               <span>
                 <span className="block text-sm font-black uppercase tracking-wide text-white sm:text-base">
@@ -110,8 +126,14 @@ export default async function RootLayout({
           <div className="shell grid gap-8 py-10 md:grid-cols-[1.2fr_0.8fr_0.8fr]">
             <div>
               <div className="flex items-center gap-3">
-                <span className="item-cube grid h-10 w-10 place-items-center border border-moss/30 bg-moss/10 font-black text-acid">
-                  ZP
+                <span className="item-cube grid h-10 w-10 overflow-hidden border border-moss/30 bg-black/35">
+                  <Image
+                    src="/zombie-event-icon.png"
+                    alt=""
+                    width={40}
+                    height={40}
+                    className="h-full w-full object-cover"
+                  />
                 </span>
                 <div>
                   <p className="font-black uppercase tracking-wide text-white">Zombie Event Shop</p>
