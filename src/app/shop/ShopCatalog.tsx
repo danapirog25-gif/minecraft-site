@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { CartButton } from "@/components/CartButton";
 import type { CartProduct } from "@/components/cart-storage";
-import { ItemIcon, itemKindFromProduct } from "@/components/ItemIcon";
+import { ItemIcon, itemKindFromProduct, itemKindFromText } from "@/components/ItemIcon";
 import { categoryMeta, parseTextList, teamLabels } from "@/lib/catalog";
 import { formatTalers } from "@/lib/currency";
 
@@ -452,9 +452,14 @@ function ProductCard({ product, categoryTitle }: { product: CatalogProduct; cate
           </p>
           <ul className="space-y-2 text-sm leading-6 text-fog/75">
             {(contents.length ? contents.slice(0, 5) : ["Склад уточнюється адміністратором"]).map((item) => (
-              <li key={item} className="flex gap-2">
-                <CheckCircle2 size={15} className={`mt-1 shrink-0 ${isLegendary ? "text-gold" : "text-moss"}`} />
-                <span>{item}</span>
+              <li key={item} className="grid grid-cols-[28px_minmax(0,1fr)] gap-2">
+                <span className="item-cube grid h-7 w-7 shrink-0 place-items-center border border-white/10 bg-black/25">
+                  <ItemIcon kind={itemKindFromText(item, product.iconKind)} size="xs" />
+                </span>
+                <span className="flex min-w-0 items-start gap-2">
+                  <CheckCircle2 size={15} className={`mt-1 shrink-0 ${isLegendary ? "text-gold" : "text-moss"}`} />
+                  <span>{item}</span>
+                </span>
               </li>
             ))}
           </ul>

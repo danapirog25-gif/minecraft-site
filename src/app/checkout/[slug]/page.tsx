@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { AlertTriangle, CheckCircle2, PackageOpen, ShieldCheck, Wallet } from "lucide-react";
-import { ItemIcon, itemKindFromProduct } from "@/components/ItemIcon";
+import { ItemIcon, itemKindFromProduct, itemKindFromText } from "@/components/ItemIcon";
 import { prisma } from "@/lib/prisma";
 import { categoryLabels, parseTextList, teamLabels } from "@/lib/catalog";
 import { formatTalers } from "@/lib/currency";
@@ -92,9 +92,14 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
             </p>
             <ul className="space-y-2 text-sm leading-6 text-fog/75">
               {(contents.length ? contents.slice(0, 6) : ["Склад уточнюється адміністратором"]).map((item) => (
-                <li key={item} className="flex gap-2">
-                  <CheckCircle2 size={15} className={`mt-1 shrink-0 ${isLegendary ? "text-gold" : "text-moss"}`} />
-                  <span>{item}</span>
+                <li key={item} className="grid grid-cols-[28px_minmax(0,1fr)] gap-2">
+                  <span className="item-cube grid h-7 w-7 shrink-0 place-items-center border border-white/10 bg-black/25">
+                    <ItemIcon kind={itemKindFromText(item, iconKind)} size="xs" />
+                  </span>
+                  <span className="flex min-w-0 items-start gap-2">
+                    <CheckCircle2 size={15} className={`mt-1 shrink-0 ${isLegendary ? "text-gold" : "text-moss"}`} />
+                    <span>{item}</span>
+                  </span>
                 </li>
               ))}
             </ul>

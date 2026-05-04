@@ -9,7 +9,7 @@ import {
   Info
 } from "lucide-react";
 import { CartButton } from "@/components/CartButton";
-import { ItemIcon, itemKindFromProduct } from "@/components/ItemIcon";
+import { ItemIcon, itemKindFromProduct, itemKindFromText } from "@/components/ItemIcon";
 import { prisma } from "@/lib/prisma";
 import { categoryLabels, parseTextList, teamLabels } from "@/lib/catalog";
 import { formatTalers } from "@/lib/currency";
@@ -215,9 +215,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </p>
           <ul className="grid gap-3 sm:grid-cols-2">
             {(contents.length ? contents : ["Склад уточнюється адміністратором"]).map((item) => (
-              <li key={item} className="flex gap-3 rounded-sm border border-white/10 bg-black/20 p-4 text-fog/75">
-                <CheckCircle2 className={`mt-0.5 shrink-0 ${isLegendary ? "text-gold" : "text-moss"}`} size={18} />
-                <span>{item}</span>
+              <li key={item} className="grid grid-cols-[44px_minmax(0,1fr)] gap-3 rounded-sm border border-white/10 bg-black/20 p-4 text-fog/75">
+                <span className="item-cube grid h-11 w-11 shrink-0 place-items-center border border-white/10 bg-black/25">
+                  <ItemIcon kind={itemKindFromText(item, iconKind)} size="sm" />
+                </span>
+                <span className="flex min-w-0 items-start gap-2">
+                  <CheckCircle2 className={`mt-1 shrink-0 ${isLegendary ? "text-gold" : "text-moss"}`} size={18} />
+                  <span className="leading-7">{item}</span>
+                </span>
               </li>
             ))}
           </ul>

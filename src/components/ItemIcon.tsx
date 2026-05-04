@@ -251,7 +251,7 @@ export function itemKindFromProduct(product: { name: string; slug: string; categ
   if (value.includes("скло") || value.includes("glass")) return "glass";
   if (value.includes("драбин") || value.includes("ladder")) return "ladder";
   if (value.includes("смолос") || value.includes("torch")) return "torch";
-  if (value.includes("бруків") || value.includes("cobblestone")) return "cobblestone";
+  if (value.includes("кругляк") || value.includes("бруків") || value.includes("cobblestone")) return "cobblestone";
   if (value.includes("дошк") || value.includes("planks")) return "oak_planks";
   if (value.includes("стріл") || value.includes("arrow")) return "arrow";
   if (value.includes("щит") || value.includes("shield")) return "shield";
@@ -282,6 +282,89 @@ export function itemKindFromProduct(product: { name: string; slug: string; categ
   if (product.category === "single_resources") return "diamond";
 
   return "shulker_box";
+}
+
+export function itemKindFromText(text: string, fallback = "shulker_box"): string {
+  const value = text.toLowerCase();
+  const has = (...needles: string[]) => needles.some((needle) => value.includes(needle));
+
+  if (has("зачароване золоте яблу", "зачаровані золоті яблу", "enchanted golden apple", "enchanted_golden_apple")) return "enchanted_golden_apple";
+  if (has("золоте яблу", "золоті яблу", "golden apple", "golden_apple")) return "golden_apple";
+  if (has("адмінське зілля", "зілля", "potion")) return "potion";
+  if (has("варена яловичина", "ялович", "cooked beef", "cooked_beef")) return "cooked_beef";
+  if (has("хліб", "bread")) return "bread";
+
+  if (has("відро води", "відра води", "water bucket", "water_bucket")) return "water_bucket";
+  if (has("відро лави", "відра лави", "lava bucket", "lava_bucket")) return "lava_bucket";
+  if (has("відро молока", "відра молока", "milk bucket", "milk_bucket")) return "milk_bucket";
+
+  if (has("тризуб", "trident")) return "trident";
+  if (has("арбалет", "crossbow")) return "crossbow";
+  if (has("стріл", "arrow")) return "arrow";
+  if (has("щит", "shield")) return "shield";
+  if (has("лук", "bow")) return "bow";
+  if (has("меч", "sword")) {
+    if (has("незерит", "netherite")) return "netherite_sword";
+    if (has("заліз", "iron")) return "iron_sword";
+    return "diamond_sword";
+  }
+  if (has("сокир", "axe")) {
+    if (has("заліз", "iron")) return "iron_axe";
+    return "diamond_axe";
+  }
+  if (has("кирк", "pickaxe")) {
+    if (has("алмаз", "diamond")) return "diamond_pickaxe";
+    return "iron_pickaxe";
+  }
+  if (has("лопат", "shovel")) {
+    if (has("алмаз", "diamond")) return "diamond_shovel";
+    return "iron_shovel";
+  }
+  if (has("ножиц", "shears")) return "shears";
+  if (has("запальнич", "flint and steel", "flint_and_steel")) return "flint_and_steel";
+  if (has("вудк", "fishing rod", "fishing_rod")) return "fishing_rod";
+
+  if (has("брон", "сет", "нагруд", "шолом", "понож", "чобот", "armor", "chestplate")) {
+    if (has("незерит", "netherite")) return "netherite_chestplate";
+    if (has("алмаз", "diamond")) return "diamond_chestplate";
+    return "iron_chestplate";
+  }
+
+  if (has("тотем", "totem", "друге життя", "повернення зомбі")) return "totem_of_undying";
+  if (has("ендер-перл", "ендер перл", "ender pearl", "ender_pearl")) return "ender_pearl";
+  if (has("компас", "compass")) return "compass";
+  if (has("маяк", "beacon")) return "beacon";
+  if (has("шалкер", "shulker")) return "shulker_box";
+  if (has("панцир", "shell")) return "shulker_shell";
+
+  if (has("незеритові злитки", "незеритовий злиток", "netherite ingot", "netherite_ingot")) return "netherite_ingot";
+  if (has("залізні злитки", "залізний злиток", "iron ingot", "iron_ingot")) return "iron_ingot";
+  if (has("золоті злитки", "золотий злиток", "gold ingot", "gold_ingot")) return "gold_ingot";
+  if (has("діамант", "алмаз", "diamond")) return "diamond";
+  if (has("смарагд", "emerald")) return "emerald";
+  if (has("редстоун", "порш", "повторювач", "redstone", "piston", "repeater")) return "redstone";
+  if (has("вугіл", "coal")) return "coal";
+  if (has("кварц", "quartz")) return "quartz";
+  if (has("книг", "book")) return "book";
+  if (has("папір", "paper")) return "paper";
+
+  if (has("тнт", "tnt")) return "tnt";
+  if (has("обсидіан", "obsidian")) return "obsidian";
+  if (has("глибинна бруківка", "cobbled deepslate", "cobbled_deepslate")) return "cobbled_deepslate";
+  if (has("кам'яна цегла", "кам’яна цегла", "stone bricks", "stone_bricks")) return "stone_bricks";
+  if (has("кругляк", "бруків", "cobblestone")) return "cobblestone";
+  if (has("камінь", "stone")) return "stone";
+  if (has("дубові дошки", "дошк", "oak planks", "oak_planks", "planks")) return "oak_planks";
+  if (has("скло", "glass")) return "glass";
+  if (has("смолоскип", "torch")) return "torch";
+  if (has("драбин", "ladder")) return "ladder";
+  if (has("незерак", "netherrack")) return "netherrack";
+  if (has("блоки для будівництва", "блоки для позицій", "building blocks")) return "cobblestone";
+
+  if (has("приват", "клейм", "private", "claim")) return "wooden_axe";
+  if (has("збереження інвентарю", "інвентар", "inventory")) return "beacon";
+
+  return fallback;
 }
 
 export function ItemIcon({ kind, size = "md", className = "" }: ItemIconProps) {
