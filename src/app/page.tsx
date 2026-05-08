@@ -2,12 +2,18 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
+  ExternalLink,
   Info,
   MessageCircle,
+  Music2,
+  Radio,
   Shield,
-  Skull
+  Skull,
+  Twitch,
+  Youtube
 } from "lucide-react";
 import { ItemIcon } from "@/components/ItemIcon";
+import { creatorInfo } from "@/lib/creator";
 import { eventInfo } from "@/lib/event-info";
 
 const sides = [
@@ -61,6 +67,30 @@ const popular = [
     category: "Суперпредмети",
     price: "500 талерів",
     iconKind: "netherite_chestplate"
+  }
+];
+
+const creatorLinks = [
+  {
+    label: "Twitch",
+    handle: "smurfplay4",
+    href: creatorInfo.twitchUrl,
+    icon: Twitch,
+    className: "border-[#9146ff]/40 bg-[#9146ff]/10 text-[#d8b4fe] hover:border-[#c084fc]/70 hover:bg-[#9146ff]/20"
+  },
+  {
+    label: "YouTube",
+    handle: "@SmurfPlay2",
+    href: creatorInfo.youtubeUrl,
+    icon: Youtube,
+    className: "border-blood/45 bg-blood/10 text-red-200 hover:border-blood/80 hover:bg-blood/20"
+  },
+  {
+    label: "TikTok",
+    handle: "@smurfplay4",
+    href: creatorInfo.tiktokUrl,
+    icon: Music2,
+    className: "border-ward/40 bg-ward/10 text-teal-100 hover:border-ward/80 hover:bg-ward/20"
   }
 ];
 
@@ -160,6 +190,65 @@ export default function HomePage() {
             </article>
           );
         })}
+      </section>
+
+      <section id="smurfplay" className="shell pb-16 pt-4 sm:pb-20 lg:pt-8">
+        <div className="pixel-corners relative overflow-hidden border border-ward/30 bg-[linear-gradient(135deg,rgba(45,212,191,0.16),rgba(17,26,19,0.94)_38%,rgba(7,17,10,0.96))] p-8 shadow-glow sm:p-10 lg:p-12">
+          <div className="pointer-events-none absolute right-8 top-8 hidden h-20 w-20 border border-ward/40 bg-ward/10 shadow-glow lg:block" />
+          <div className="pointer-events-none absolute bottom-8 right-36 hidden h-12 w-28 border border-blood/30 bg-blood/10 shadow-redglow lg:block" />
+
+          <div className="relative grid gap-9 lg:grid-cols-[1fr_0.82fr] lg:items-center">
+            <div>
+              <p className="inline-flex items-center gap-2 rounded-sm border border-ward/30 bg-ward/10 px-3 py-1.5 text-sm font-black uppercase tracking-wide text-ward">
+                <Radio size={16} />
+                Контент і стріми
+              </p>
+              <h2 className="voxel-title mt-5 text-4xl font-black uppercase text-white sm:text-5xl">
+                Дивись {creatorInfo.name}
+              </h2>
+              <p className="mt-5 max-w-2xl text-lg leading-8 text-fog/72">
+                {creatorInfo.name} допомагає розвивати сервер, підтримує активність навколо івенту та робить стріми з живими моментами матчу.
+                Підписка на його платформи допомагає спільноті рости швидше.
+              </p>
+              <a
+                href={creatorInfo.twitchUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="menu-button mt-8 inline-flex items-center justify-center gap-2 rounded-sm bg-ward px-7 py-4 font-black uppercase text-bunker transition hover:-translate-y-1 hover:bg-acid"
+              >
+                <Twitch size={20} />
+                Дивитися стрім
+                <ExternalLink size={18} />
+              </a>
+            </div>
+
+            <div className="grid gap-4">
+              {creatorLinks.map((link) => {
+                const Icon = link.icon;
+                return (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={`shop-card flex items-center justify-between gap-4 rounded-sm border p-4 transition ${link.className}`}
+                  >
+                    <span className="flex min-w-0 items-center gap-4">
+                      <span className="item-cube grid h-14 w-14 shrink-0 place-items-center border border-current/30 bg-black/25">
+                        <Icon size={28} />
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block text-lg font-black text-white">{link.label}</span>
+                        <span className="block truncate text-sm font-bold text-fog/56">{link.handle}</span>
+                      </span>
+                    </span>
+                    <ExternalLink className="shrink-0 text-fog/50" size={18} />
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        </div>
       </section>
 
       <section className="shell pb-16 pt-8 sm:pb-20 lg:pt-10">

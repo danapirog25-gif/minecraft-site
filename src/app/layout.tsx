@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { MessageCircle, Send, ShieldCheck, UserRound } from "lucide-react";
+import { MessageCircle, Music2, Send, ShieldCheck, Twitch, UserRound, Youtube } from "lucide-react";
 import { CartNavLink } from "@/components/CartNavLink";
 import { ItemIcon } from "@/components/ItemIcon";
 import { MobileMenu } from "@/components/MobileMenu";
+import { creatorInfo } from "@/lib/creator";
 import { formatTalers } from "@/lib/currency";
 import { eventInfo } from "@/lib/event-info";
 import { getCurrentUser } from "@/lib/user-auth";
@@ -88,6 +89,9 @@ export default async function RootLayout({
               <Link className="rounded-sm px-3 py-2 transition hover:bg-white/10 hover:text-white" href="/rules">
                 Правила
               </Link>
+              <Link className="rounded-sm px-3 py-2 transition hover:bg-white/10 hover:text-white" href="/#smurfplay">
+                SmurfPlay
+              </Link>
               <Link className="rounded-sm border border-gold/30 bg-gold/10 px-3 py-2 text-gold transition hover:bg-gold/20" href="/shop#gods">
                 Суперпредмети
               </Link>
@@ -152,6 +156,18 @@ export default async function RootLayout({
                 <a className="inline-flex items-center gap-2 transition hover:text-white" href={eventInfo.discordUrl} target="_blank" rel="noreferrer">
                   <MessageCircle size={16} className="text-moss" />
                   Discord
+                </a>
+                <a className="inline-flex items-center gap-2 transition hover:text-white" href={creatorInfo.twitchUrl} target="_blank" rel="noreferrer">
+                  <Twitch size={16} className="text-[#c084fc]" />
+                  SmurfPlay Twitch
+                </a>
+                <a className="inline-flex items-center gap-2 transition hover:text-white" href={creatorInfo.youtubeUrl} target="_blank" rel="noreferrer">
+                  <Youtube size={16} className="text-blood" />
+                  SmurfPlay YouTube
+                </a>
+                <a className="inline-flex items-center gap-2 transition hover:text-white" href={creatorInfo.tiktokUrl} target="_blank" rel="noreferrer">
+                  <Music2 size={16} className="text-ward" />
+                  SmurfPlay TikTok
                 </a>
                 <a className="inline-flex items-center gap-2 transition hover:text-white" href="https://t.me/" target="_blank" rel="noreferrer">
                   <Send size={16} className="text-ward" />

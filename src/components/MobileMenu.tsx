@@ -19,6 +19,7 @@ const links = [
   { href: "/event", label: "Івент наживо" },
   { href: "/faq", label: "FAQ" },
   { href: "/rules", label: "Правила" },
+  { href: "/#smurfplay", label: "SmurfPlay" },
   { href: "/shop#gods", label: "Суперпредмети" }
 ];
 
