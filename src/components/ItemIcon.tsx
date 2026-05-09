@@ -21,6 +21,7 @@ const textureByKind: Record<string, string> = {
   bow: "bow.png",
   coal: "coal.png",
   cobblestone: "cobblestone.png",
+  cobweb: "cobweb.png",
   compass: "compass.png",
   diamond: "diamond.png",
   diamond_chestplate: "diamond_chestplate.png",
@@ -133,6 +134,7 @@ const resourceKindBySlug: Record<string, string> = {
   "oak-logs": "oak_log",
   obsidian: "obsidian",
   glass: "glass",
+  cobwebs: "cobweb",
   ladders: "ladder",
   torches: "torch",
   "crafting-tables": "crafting_table",
@@ -364,6 +366,7 @@ export function itemKindFromText(text: string, fallback = "shulker_box"): string
 
   if (has("тнт", "tnt")) return "tnt";
   if (has("обсидіан", "obsidian")) return "obsidian";
+  if (has("павутин", "cobweb")) return "cobweb";
   if (has("глибинна бруківка", "cobbled deepslate", "cobbled_deepslate")) return "cobbled_deepslate";
   if (has("кам'яна цегла", "кам’яна цегла", "stone bricks", "stone_bricks")) return "stone_bricks";
   if (has("кругляк", "бруків", "cobblestone")) return "cobblestone";

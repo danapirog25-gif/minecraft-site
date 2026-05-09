@@ -253,6 +253,15 @@ const resourceDefinitions: ResourceDefinition[] = [
     benefits: ["Дорожчий за звичайні блоки, бо сильно підсилює оборону.", "Добре підходить для фінальних хвиль і захищених проходів."]
   },
   { name: "Скло", slug: "glass", item: "glass", prices: [5, 8, 14] },
+  {
+    name: "Павутина",
+    slug: "cobwebs",
+    item: "cobweb",
+    prices: [12, 22, 38],
+    contentsLabel: "Павутина",
+    description: "Павутина для пасток, сповільнення проходів і точкового захисту бази під час івенту.",
+    benefits: ["Корисна для оборони й контролю вузьких місць.", "Дорожча за звичайні блоки, бо має сильний тактичний ефект."]
+  },
   { name: "Драбини", slug: "ladders", item: "ladder", prices: [5, 8, 14] },
   { name: "Смолоскипи", slug: "torches", item: "torch", prices: [4, 7, 12] },
   { name: "Верстаки", slug: "crafting-tables", item: "crafting_table", prices: [4, 7, 12] },

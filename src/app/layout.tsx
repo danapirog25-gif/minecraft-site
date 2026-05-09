@@ -89,9 +89,6 @@ export default async function RootLayout({
               <Link className="rounded-sm px-3 py-2 transition hover:bg-white/10 hover:text-white" href="/rules">
                 Правила
               </Link>
-              <Link className="rounded-sm px-3 py-2 transition hover:bg-white/10 hover:text-white" href="/#smurfplay">
-                SmurfPlay
-              </Link>
               <Link className="rounded-sm border border-gold/30 bg-gold/10 px-3 py-2 text-gold transition hover:bg-gold/20" href="/shop#gods">
                 Суперпредмети
               </Link>
