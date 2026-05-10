@@ -177,6 +177,7 @@ const adminNetheriteAxe = give("netherite_axe", 1, enchantments([
 ]));
 const adminBow = give("bow", 1, adminBowNbt);
 const adminAllEffectsPotionNbt = `{CustomPotionColor:16766720,display:{Name:'{"text":"Адмінське зілля всіх бафів","color":"gold","italic":false}'},CustomPotionEffects:[{Id:1b,Amplifier:4b,Duration:12000},{Id:3b,Amplifier:4b,Duration:12000},{Id:5b,Amplifier:4b,Duration:12000},{Id:6b,Amplifier:4b,Duration:1},{Id:8b,Amplifier:4b,Duration:12000},{Id:10b,Amplifier:4b,Duration:12000},{Id:11b,Amplifier:4b,Duration:12000},{Id:12b,Amplifier:0b,Duration:12000},{Id:13b,Amplifier:0b,Duration:12000},{Id:16b,Amplifier:0b,Duration:12000},{Id:21b,Amplifier:4b,Duration:12000},{Id:22b,Amplifier:4b,Duration:12000},{Id:23b,Amplifier:4b,Duration:1200},{Id:26b,Amplifier:4b,Duration:12000},{Id:28b,Amplifier:0b,Duration:12000},{Id:29b,Amplifier:0b,Duration:12000},{Id:30b,Amplifier:0b,Duration:12000},{Id:32b,Amplifier:4b,Duration:12000}]}`;
+const smurfMushroomNbt = `{display:{Name:'{"text":"Грибочок Смурфа","color":"aqua","italic":false}',Lore:['{"text":"Смурф-ефект: усі негативні ефекти одразу.","color":"dark_purple","italic":false}','{"text":"Рофл-предмет для хаотичних моментів.","color":"gray","italic":false}']},Effects:[{EffectId:2b,EffectDuration:1200},{EffectId:4b,EffectDuration:1200},{EffectId:7b,EffectDuration:1},{EffectId:9b,EffectDuration:600},{EffectId:15b,EffectDuration:600},{EffectId:17b,EffectDuration:1200},{EffectId:18b,EffectDuration:1200},{EffectId:19b,EffectDuration:600},{EffectId:20b,EffectDuration:600},{EffectId:25b,EffectDuration:200},{EffectId:27b,EffectDuration:1200},{EffectId:31b,EffectDuration:1200},{EffectId:33b,EffectDuration:600}]}`;
 
 function trackingCompassNbt(name: string, color: string, target: string): string {
   return `{display:{Name:'{"text":"${name}","color":"${color}","italic":false}',Lore:['{"text":"Показує напрямок до цілі: ${target}.","color":"gray","italic":false}','{"text":"Працює через серверний плагін або адмінську систему.","color":"dark_gray","italic":false}']},Enchantments:[{id:"minecraft:unbreaking",lvl:1s}],HideFlags:1}`;
@@ -212,7 +213,7 @@ const nonStackableResourceCounts = [1, 3, 6] as const;
 const resourceDefinitions: ResourceDefinition[] = [
   { name: "Алмази", slug: "diamonds", item: "diamond", prices: [10, 20, 35] },
   { name: "Смарагди", slug: "emeralds", item: "emerald", prices: [8, 16, 30] },
-  { name: "Залізні злитки", slug: "iron-ingots", item: "iron_ingot", prices: [5, 8, 14] },
+  { name: "Залізні злитки", slug: "iron-ingots", item: "iron_ingot", prices: [8, 15, 28] },
   { name: "Золоті злитки", slug: "gold-ingots", item: "gold_ingot", prices: [6, 12, 22] },
   { name: "Редстоун", slug: "redstone", item: "redstone", prices: [5, 8, 12] },
   { name: "Вугілля", slug: "coal", item: "coal", prices: [5, 7, 10] },
@@ -234,7 +235,7 @@ const resourceDefinitions: ResourceDefinition[] = [
     description: "Пляшечки досвіду для швидкого ремонту речей із Mending або підготовки перед боєм.",
     benefits: ["Дорожчі за звичайні матеріали, бо економлять час на фармі.", "Корисні перед фінальними хвилями івенту."]
   },
-  { name: "Бруківка", slug: "cobblestone", item: "cobblestone", prices: [5, 7, 10] },
+  { name: "Кругляк", slug: "cobblestone", item: "cobblestone", prices: [5, 7, 10] },
   { name: "Дубові дошки", slug: "oak-planks", item: "oak_planks", prices: [5, 7, 10] },
   { name: "Камінь", slug: "stone", item: "stone", prices: [5, 7, 10] },
   { name: "Земля", slug: "dirt", item: "dirt", prices: [3, 5, 8] },
@@ -420,7 +421,7 @@ const resourceDefinitions: ResourceDefinition[] = [
     slug: "iron-swords",
     item: "iron_sword",
     counts: nonStackableResourceCounts,
-    prices: [10, 27, 50],
+    prices: [6, 16, 30],
     contentsLabel: "Залізний меч",
     description: "Звичайні залізні мечі для швидкого повернення в бій після смерті.",
     benefits: ["Дешево закриває базову потребу у зброї.", "Добре для командних запасів."]
@@ -440,7 +441,7 @@ const resourceDefinitions: ResourceDefinition[] = [
     slug: "iron-pickaxes",
     item: "iron_pickaxe",
     counts: nonStackableResourceCounts,
-    prices: [10, 27, 50],
+    prices: [8, 22, 40],
     contentsLabel: "Залізна кирка",
     description: "Залізні кирки для швидкого видобутку, ремонту проходів і роботи з базою.",
     benefits: ["Корисні кожній команді як запас інструментів.", "Дешевше за алмазні інструменти."]
@@ -460,7 +461,7 @@ const resourceDefinitions: ResourceDefinition[] = [
     slug: "iron-axes",
     item: "iron_axe",
     counts: nonStackableResourceCounts,
-    prices: [11, 30, 55],
+    prices: [9, 24, 44],
     contentsLabel: "Залізна сокира",
     description: "Залізні сокири для дерева, щитів і ближніх сутичок.",
     benefits: ["Корисні як інструмент і запасна зброя.", "Трохи дорожче за меч через універсальність."]
@@ -480,7 +481,7 @@ const resourceDefinitions: ResourceDefinition[] = [
     slug: "iron-shovels",
     item: "iron_shovel",
     counts: nonStackableResourceCounts,
-    prices: [8, 22, 40],
+    prices: [4, 11, 20],
     contentsLabel: "Залізна лопата",
     description: "Лопати для траншей, піску, гравію й швидкого облаштування проходів.",
     benefits: ["Дешевий інструмент для будівельників.", "Корисно мати кілька в командному складі."]
@@ -525,7 +526,15 @@ const resourceDefinitions: ResourceDefinition[] = [
     description: "Вудки для контролю дистанції, риболовлі або PvP-трюків.",
     benefits: ["Недорогий предмет для креативних гравців.", "Не дає прямої сили, але додає варіантів гри."]
   },
-  { name: "Панцирі шалкера", slug: "shulker-shells", item: "shulker_shell", prices: [12, 24, 45] },
+  {
+    name: "Панцирі шалкера",
+    slug: "shulker-shells",
+    item: "shulker_shell",
+    counts: [2, 6, 12],
+    prices: [65, 135, 250],
+    description: "Панцирі шалкера продаються парами, бо 2 панцирі разом зі скринею крафтяться в 1 шалкер. Ціна тримає баланс із готовими шалкерами.",
+    benefits: ["Гнучкий ресурс для власного крафту шалкерів.", "Не дає дешевого обходу готових шалкерів у магазині."]
+  },
   {
     name: "Звичайні шалкери",
     slug: "shulkers",
@@ -536,7 +545,15 @@ const resourceDefinitions: ResourceDefinition[] = [
     description: "Звичайні шалкери без адмін-чарів і гліту. Потрібні для зручного зберігання луту під час івенту.",
     benefits: ["Це звичайний survival-предмет без додаткових чарів.", "Зручно для ресурсів, рейдів і командного складу."]
   },
-  { name: "Маяки", slug: "beacons", item: "beacon", prices: [25, 40, 50] },
+  {
+    name: "Маяки",
+    slug: "beacons",
+    item: "beacon",
+    counts: [1, 2, 3],
+    prices: [25, 40, 50],
+    description: "Маяки для івенту. Тепер продаються невеликими наборами по 1, 2 або 3 штуки.",
+    benefits: ["Сильний предмет для командних баз і фінальної оборони.", "Можна докупити рівно стільки маяків, скільки треба."]
+  },
   {
     name: "Штормові тризуби",
     slug: "tridents",
@@ -724,7 +741,7 @@ const products: SeedProduct[] = [
       "Залізний меч — 1 шт.",
       "Залізна кирка — 1 шт.",
       "Залізна сокира — 1 шт.",
-      "Бруківка — 192 шт.",
+      "Кругляк — 192 шт.",
       "Дубові дошки — 128 шт.",
       "Скло — 64 шт.",
       "Смолоскипи — 96 шт.",
@@ -856,7 +873,7 @@ const products: SeedProduct[] = [
       "Ендер-перли — 5 шт.",
       "Зілля швидкості — 3 шт.",
       "Золоті яблука — 2 шт.",
-      "Бруківка — 96 шт.",
+      "Кругляк — 96 шт.",
       "Варена яловичина — 48 шт."
     ],
     benefits: ["Дає зомбі мобільність для раннього тиску.", "Сильний у погоні, але без важкої броні чи адмін-чарів."],
@@ -878,7 +895,7 @@ const products: SeedProduct[] = [
       "Зілля сили — 2 шт.",
       "Золоті яблука — 4 шт.",
       "Драбини — 64 шт.",
-      "Бруківка — 128 шт.",
+      "Кругляк — 128 шт.",
       "Варена яловичина — 64 шт."
     ],
     benefits: ["Для агресивної гри за зомбі й швидких вривів.", "Мобільність вища за звичайний старт, тому ціна теж вища."],
@@ -946,7 +963,7 @@ const products: SeedProduct[] = [
       "Драбини — 128 шт.",
       "Смолоскипи — 160 шт.",
       "Незерак — 192 шт.",
-      "Бруківка — 192 шт.",
+      "Кругляк — 192 шт.",
       "Відро води — 1 шт.",
       "Ендер-перли — 4 шт.",
       "Варена яловичина — 64 шт."
@@ -963,7 +980,7 @@ const products: SeedProduct[] = [
     team: "zombies",
     contents: [
       "Шалкери — 2 шт.",
-      "Бруківка — 384 шт.",
+      "Кругляк — 384 шт.",
       "Незерак — 384 шт.",
       "Драбини — 160 шт.",
       "Смолоскипи — 160 шт.",
@@ -1221,7 +1238,7 @@ const products: SeedProduct[] = [
       "Зачарований залізний меч — 1 шт.",
       "Камінь — 192 шт.",
       "Дубові дошки — 192 шт.",
-      "Бруківка — 192 шт.",
+      "Кругляк — 192 шт.",
       "Скло — 64 шт.",
       "Драбини — 64 шт.",
       "Смолоскипи — 128 шт.",
@@ -1313,7 +1330,7 @@ const products: SeedProduct[] = [
       "Звичайні шалкери — 3 шт.",
       "Варена яловичина — 128 шт.",
       "Хліб — 128 шт.",
-      "Бруківка — 256 шт.",
+      "Кругляк — 256 шт.",
       "Дубові дошки — 256 шт.",
       "Смолоскипи — 192 шт.",
       "Залізні злитки — 64 шт.",
@@ -1504,7 +1521,7 @@ const products: SeedProduct[] = [
       "Запальнички — 3 шт.",
       "Відра лави — 3 шт.",
       "Обсидіан — 32 шт.",
-      "Бруківка — 192 шт.",
+      "Кругляк — 192 шт.",
       "Золоті яблука — 8 шт.",
       "Варена яловичина — 64 шт."
     ],
@@ -1704,6 +1721,21 @@ const products: SeedProduct[] = [
     ],
     benefits: ["Найдорожчий набір магазину за внутрішню валюту.", "Усередині survival-неможливі предмети з адмін-рівнями чар."],
     itemsCommands: [...adminNetheriteArmorSet(), adminNetheriteSword, adminNetheriteAxe, adminBow, give("shield"), give("arrow", 128), give("golden_apple", 16), give("enchanted_golden_apple", 2), give("totem_of_undying", 2), give("ender_pearl", 16), give("potion", 4, `{Potion:"minecraft:strength"}`), give("potion", 4, `{Potion:"minecraft:swiftness"}`), give("potion", 4, `{Potion:"minecraft:regeneration"}`), give("cooked_beef", 64), give("cobblestone", 128), give("obsidian", 64), give("beacon"), give("netherite_ingot", 4)]
+  },
+  {
+    name: "Грибочок Смурфа",
+    slug: "smurf-mushroom",
+    description: "Рофл-предмет за 1000 талерів: підозрілий смурф-суп, який накладає повний набір негативних ефектів.",
+    price: 1000,
+    category: "gods",
+    team: "all",
+    contents: [
+      "Грибочок Смурфа — 1 шт.",
+      "Смурф-ефект: повний набір негативних ефектів — 1 використання",
+      "Предмет створений для жартів і хаотичних моментів на івенті"
+    ],
+    benefits: ["Найдорожчий рофл-предмет у магазині.", "Не дає бойової переваги, зате створює дуже помітний момент."],
+    itemsCommands: [give("suspicious_stew", 1, smurfMushroomNbt)]
   },
   {
     name: "Компас людей: пошук зомбі",

@@ -7,12 +7,12 @@ export const topUpPackages = [
   {
     id: "talers-50",
     talers: 50,
-    amountKopiyky: 2500
+    amountKopiyky: 3000
   },
   {
     id: "talers-100",
     talers: 100,
-    amountKopiyky: 5000
+    amountKopiyky: 5500
   },
   {
     id: "talers-200",
@@ -22,7 +22,7 @@ export const topUpPackages = [
   {
     id: "talers-400",
     talers: 400,
-    amountKopiyky: 20000
+    amountKopiyky: 19967
   }
 ] as const;
 

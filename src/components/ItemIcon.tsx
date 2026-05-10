@@ -220,6 +220,7 @@ const productKindBySlug: Record<string, string> = {
   "god-engineer-kit": "redstone",
   "god-raider-kit": "netherite_sword",
   "full-god-kit": "netherite_chestplate",
+  "smurf-mushroom": "potion",
   "humans-zombie-compass": "compass",
   "zombies-human-compass": "compass",
   "private-access": "wooden_axe"

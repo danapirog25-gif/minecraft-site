@@ -25,7 +25,7 @@ export const eventEndConditions = [
   "Люди перемагають, якщо хоча б один виживший протримався 100 Minecraft-днів."
 ] as const;
 
-export const zombieVictoryRewardTalers = 120;
+export const zombieVictoryRewardTalers = 100;
 
 export const humanVictoryRewards = [
   { survivors: 1, reward: 500 },
