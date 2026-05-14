@@ -22,10 +22,12 @@ export const eventInfo = {
 
 export const eventEndConditions = [
   "Зомбі перемагають, якщо заразили всіх людей або адміністрація оголосила падіння бази.",
-  "Люди перемагають, якщо хоча б один виживший протримався 100 Minecraft-днів."
+  "Люди перемагають, якщо хоча б один виживший протримався 100 Minecraft-днів.",
+  "Розбійник перемагає окремо, якщо сам дожив до кінця таймера / 100 Minecraft-днів."
 ] as const;
 
 export const zombieVictoryRewardTalers = 50;
+export const banditRewardPercent = 60;
 
 export const humanVictoryRewards = [
   { survivors: 1, reward: 250 },
@@ -58,6 +60,16 @@ export const humanVictoryRewards = [
   { survivors: 28, reward: 42 },
   { survivors: 29, reward: 40 },
   { survivors: 30, reward: 38 }
+] as const;
+
+export const banditSoloRewardTalers = Math.round((humanVictoryRewards[0].reward * banditRewardPercent) / 100);
+
+export const banditRules = [
+  "Розбійник грає сам за себе: він не людина і не зомбі.",
+  "У нього тільки 1 життя. Після смерті він одразу втрачає роль і стає зараженим.",
+  "Вночі розбійник отримує speed та invisibility, а вдень має weakness і під відкритим небом світиться.",
+  "Компаси людей і зомбі не ведуть на розбійника.",
+  `Якщо розбійник пережив таймер сам, він отримує ${banditSoloRewardTalers} талерів. Якщо вижив разом із людьми, його приз — ${banditRewardPercent}% від виплати одного вижившого.`
 ] as const;
 
 export function getEventStartIso() {

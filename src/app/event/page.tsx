@@ -17,6 +17,9 @@ import {
   Wallet
 } from "lucide-react";
 import {
+  banditRewardPercent,
+  banditRules,
+  banditSoloRewardTalers,
   eventEndConditions,
   eventInfo,
   getEventStartIso,
@@ -138,11 +141,12 @@ export default async function EventPage() {
             <h2 className="mt-3 text-3xl font-black text-white">Коли завершується матч</h2>
             <div className="mt-6 grid gap-3">
               {eventEndConditions.map((condition, index) => {
-                const Icon = index === 0 ? Skull : Timer;
+                const Icon = index === 0 ? Skull : index === 1 ? Timer : Trophy;
+                const iconClassName = index === 0 ? "text-blood" : index === 1 ? "text-ward" : "text-gold";
 
                 return (
                   <div key={condition} className="flex gap-3 rounded-sm border border-white/10 bg-black/20 p-4">
-                    <Icon className={index === 0 ? "mt-1 shrink-0 text-blood" : "mt-1 shrink-0 text-ward"} size={22} />
+                    <Icon className={`mt-1 shrink-0 ${iconClassName}`} size={22} />
                     <p className="leading-7 text-fog/72">{condition}</p>
                   </div>
                 );
@@ -153,7 +157,7 @@ export default async function EventPage() {
           <section className="panel rounded-sm p-6">
             <p className="text-sm font-black uppercase tracking-wide text-gold">Нагороди талерами</p>
             <h2 className="mt-3 text-3xl font-black text-white">Виплати після перемоги</h2>
-            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+            <div className="mt-6 grid gap-3 lg:grid-cols-3">
               <div className="rounded-sm border border-blood/35 bg-blood/10 p-4">
                 <Skull className="text-blood" size={24} />
                 <p className="mt-3 font-black text-white">Перемагають зомбі</p>
@@ -167,6 +171,13 @@ export default async function EventPage() {
                 <p className="mt-3 font-black text-white">Перемагають люди</p>
                 <p className="mt-2 leading-7 text-fog/70">
                   Талери отримують тільки виживші. Чим менше виживших, тим більша нагорода кожному.
+                </p>
+              </div>
+              <div className="rounded-sm border border-blood/35 bg-blood/10 p-4">
+                <Trophy className="text-gold" size={24} />
+                <p className="mt-3 font-black text-white">Виживає розбійник</p>
+                <p className="mt-2 leading-7 text-fog/70">
+                  Соло-приз: <span className="font-black text-gold">{formatTalers(banditSoloRewardTalers)}</span>. Якщо вижив разом із людьми, отримує {banditRewardPercent}% від виплати одного вижившого.
                 </p>
               </div>
             </div>
@@ -186,6 +197,26 @@ export default async function EventPage() {
             </div>
           </section>
         </div>
+
+        <section className="mt-10 rounded-sm border border-blood/35 bg-blood/10 p-6">
+          <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+            <div>
+              <p className="text-sm font-black uppercase tracking-wide text-lava">Третя сторона</p>
+              <h2 className="mt-3 text-3xl font-black text-white">Роль розбійника</h2>
+              <p className="mt-4 leading-7 text-fog/72">
+                Розбійник з датапаку грає сам за себе: він не рахується ні людиною, ні зомбі, має тільки одне життя й перемагає виживанням до кінця таймера.
+              </p>
+            </div>
+            <div className="grid gap-3 md:grid-cols-2">
+              {banditRules.map((rule) => (
+                <div key={rule} className="flex gap-3 rounded-sm border border-white/10 bg-black/20 p-4">
+                  <Skull className="mt-1 shrink-0 text-blood" size={20} />
+                  <p className="leading-7 text-fog/72">{rule}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
         <div className="mt-10 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
           <div className="panel rounded-sm p-6">

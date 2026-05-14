@@ -277,6 +277,16 @@ const resourceDefinitions: ResourceDefinition[] = [
   },
   { name: "Незеритові злитки", slug: "netherite-ingots", item: "netherite_ingot", prices: [20, 35, 50] },
   {
+    name: "Незеритові покращення",
+    slug: "netherite-upgrade-templates",
+    item: "netherite_upgrade_smithing_template",
+    counts: [1, 2, 4],
+    prices: [45, 80, 140],
+    contentsLabel: "Шаблон незеритового покращення",
+    description: "Шаблони для апгрейду алмазних речей до незериту. Це рідкісний прогресійний предмет, тому продається малими наборами.",
+    benefits: ["Відкриває незеритовий апгрейд без прямої видачі готової броні.", "Дорожчий за звичайні матеріали, бо сильно пришвидшує late-game прогрес."]
+  },
+  {
     name: "Тотеми безсмертя",
     slug: "totems",
     item: "totem_of_undying",
@@ -311,6 +321,66 @@ const resourceDefinitions: ResourceDefinition[] = [
   },
   { name: "Варена яловичина", slug: "cooked-beef", item: "cooked_beef", prices: [5, 9, 16] },
   { name: "Хліб", slug: "bread", item: "bread", prices: [4, 7, 12] },
+  {
+    name: "Яйця корів",
+    slug: "cow-spawn-eggs",
+    item: "cow_spawn_egg",
+    counts: nonStackableResourceCounts,
+    prices: [18, 45, 80],
+    contentsLabel: "Яйце спавну корови",
+    description: "Яйця спавну корів для їжі, шкіри й маленьких ферм. Використовуйте без спаму біля баз.",
+    benefits: ["Дає ресурсний старт без прямої бойової переваги.", "Ціна вища за їжу, бо моб може дати повторний ресурс."]
+  },
+  {
+    name: "Яйця овець",
+    slug: "sheep-spawn-eggs",
+    item: "sheep_spawn_egg",
+    counts: nonStackableResourceCounts,
+    prices: [16, 40, 72],
+    contentsLabel: "Яйце спавну вівці",
+    description: "Яйця спавну овець для вовни, їжі й базових ферм під час івенту.",
+    benefits: ["Корисні для ліжок, декору й запасної їжі.", "Не дають миттєвої бойової сили, але допомагають базі жити довше."]
+  },
+  {
+    name: "Яйця свиней",
+    slug: "pig-spawn-eggs",
+    item: "pig_spawn_egg",
+    counts: nonStackableResourceCounts,
+    prices: [14, 35, 62],
+    contentsLabel: "Яйце спавну свині",
+    description: "Яйця спавну свиней для ферми їжі без прямої PvP-переваги.",
+    benefits: ["Дешевший варіант мирного моба.", "Підходить для баз, які хочуть стабільну їжу без готових великих наборів."]
+  },
+  {
+    name: "Яйця курей",
+    slug: "chicken-spawn-eggs",
+    item: "chicken_spawn_egg",
+    counts: nonStackableResourceCounts,
+    prices: [12, 30, 54],
+    contentsLabel: "Яйце спавну курки",
+    description: "Яйця спавну курей для їжі, яєць і пір'я. Найдешевші серед мобів, бо їхній ефект повільний.",
+    benefits: ["Добре для довгого виживання й дрібних ферм.", "Пір'я може допомогти зі стрілами, але потребує часу й крафту."]
+  },
+  {
+    name: "Яйця вовків",
+    slug: "wolf-spawn-eggs",
+    item: "wolf_spawn_egg",
+    counts: nonStackableResourceCounts,
+    prices: [30, 75, 135],
+    contentsLabel: "Яйце спавну вовка",
+    description: "Яйця спавну вовків для ризикових союзників після приручення. Не дають готової перемоги, але можуть допомогти в сутичках.",
+    benefits: ["Потребують приручення й контролю, тому залишаються ситуативними.", "Дорожчі за фермерських мобів через потенціал у бою."]
+  },
+  {
+    name: "Яйця коней",
+    slug: "horse-spawn-eggs",
+    item: "horse_spawn_egg",
+    counts: nonStackableResourceCounts,
+    prices: [30, 75, 135],
+    contentsLabel: "Яйце спавну коня",
+    description: "Яйця спавну коней для мобільності, розвідки й втечі. Сила залежить від спорядження та вміння гравця.",
+    benefits: ["Корисні для пересування, але не замінюють бойовий набір.", "Ціна тримає баланс, бо швидкість на івенті дуже цінна."]
+  },
   {
     name: "Відра води",
     slug: "water-buckets",
@@ -531,7 +601,7 @@ const resourceDefinitions: ResourceDefinition[] = [
     slug: "shulker-shells",
     item: "shulker_shell",
     counts: [2, 6, 12],
-    prices: [65, 135, 250],
+    prices: [55, 115, 210],
     description: "Панцирі шалкера продаються парами, бо 2 панцирі разом зі скринею крафтяться в 1 шалкер. Ціна тримає баланс із готовими шалкерами.",
     benefits: ["Гнучкий ресурс для власного крафту шалкерів.", "Не дає дешевого обходу готових шалкерів у магазині."]
   },

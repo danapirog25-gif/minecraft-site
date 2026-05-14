@@ -86,7 +86,7 @@ const categoryStyles: Record<
 };
 
 type CatalogTab = "bundles" | "resources";
-type ResourceTab = "all" | "materials" | "blocks" | "combat" | "weapons" | "tools" | "god_items";
+type ResourceTab = "all" | "materials" | "blocks" | "combat" | "mobs" | "weapons" | "tools" | "god_items";
 
 const RESOURCE_CATEGORY_ID = "single_resources";
 
@@ -141,6 +141,12 @@ const resourceTabs: {
     iconKind: "totem_of_undying"
   },
   {
+    id: "mobs",
+    title: "Моби",
+    description: "Яйця спавну мирних звірів для ферм, їжі й мобільності.",
+    iconKind: "spawn_egg"
+  },
+  {
     id: "weapons",
     title: "Зброя",
     description: "Звичайна зброя без адмін-чарів.",
@@ -179,6 +185,7 @@ const resourceTabByGroupSlug: Record<string, Exclude<ResourceTab, "all">> = {
   books: "materials",
   "experience-bottles": "materials",
   "netherite-ingots": "materials",
+  "netherite-upgrade-templates": "materials",
   "shulker-shells": "materials",
   cobblestone: "blocks",
   "oak-planks": "blocks",
@@ -216,6 +223,12 @@ const resourceTabByGroupSlug: Record<string, Exclude<ResourceTab, "all">> = {
   "strength-potions": "combat",
   "regeneration-potions": "combat",
   "fire-resistance-potions": "combat",
+  "cow-spawn-eggs": "mobs",
+  "sheep-spawn-eggs": "mobs",
+  "pig-spawn-eggs": "mobs",
+  "chicken-spawn-eggs": "mobs",
+  "wolf-spawn-eggs": "mobs",
+  "horse-spawn-eggs": "mobs",
   "regular-bows": "weapons",
   crossbows: "weapons",
   "iron-swords": "weapons",
@@ -275,6 +288,7 @@ const resourceOrder = [
   "furnaces",
   "tnt",
   "netherite-ingots",
+  "netherite-upgrade-templates",
   "totems",
   "ender-pearls",
   "golden-apples",
@@ -283,6 +297,12 @@ const resourceOrder = [
   "shields",
   "cooked-beef",
   "bread",
+  "cow-spawn-eggs",
+  "sheep-spawn-eggs",
+  "pig-spawn-eggs",
+  "chicken-spawn-eggs",
+  "wolf-spawn-eggs",
+  "horse-spawn-eggs",
   "water-buckets",
   "lava-buckets",
   "milk-buckets",

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, ShieldCheck, Skull, UsersRound } from "lucide-react";
-import { eventEndConditions, zombieVictoryRewardTalers } from "@/lib/event-info";
+import { banditRewardPercent, banditSoloRewardTalers, eventEndConditions, zombieVictoryRewardTalers } from "@/lib/event-info";
 import { formatTalers } from "@/lib/currency";
 
 export const metadata: Metadata = {
@@ -18,8 +18,10 @@ const rules = [
   "Адміністрація може обмежити використання занадто сильних предметів, якщо це ламає баланс.",
   eventEndConditions[0],
   eventEndConditions[1],
+  eventEndConditions[2],
   `За перемогу зомбі всі активні учасники отримують по ${formatTalers(zombieVictoryRewardTalers)}.`,
   "За перемогу людей талери отримують тільки виживші за таблицею на сторінці івенту.",
+  `Якщо розбійник вижив сам, він отримує ${formatTalers(banditSoloRewardTalers)}. Якщо вижив разом із людьми, його приз — ${banditRewardPercent}% від виплати одного вижившого.`,
   "Заборонено використовувати чіти, баги, дюпи та сторонні програми.",
   "Заборонена токсичність, образи та заважання проведенню івенту.",
   "Ресурси видаються після підтвердження оплати.",
@@ -60,7 +62,7 @@ export default function RulesPage() {
         ))}
       </div>
 
-      <div className="mt-10 grid gap-4 md:grid-cols-2">
+      <div className="mt-10 grid gap-4 md:grid-cols-3">
         <div className="ward-frame rounded-sm border p-6">
           <UsersRound className="text-ward" size={30} />
           <h2 className="mt-4 text-2xl font-black text-white">Люди</h2>
@@ -73,6 +75,13 @@ export default function RulesPage() {
           <h2 className="mt-4 text-2xl font-black text-white">Зомбі</h2>
           <p className="mt-3 leading-7 text-fog/70">
             Атакують хвилями, шукають слабкі місця й не зловживають spawn-блокуванням.
+          </p>
+        </div>
+        <div className="rounded-sm border border-blood/35 bg-blood/10 p-6">
+          <Skull className="text-lava" size={30} />
+          <h2 className="mt-4 text-2xl font-black text-white">Розбійник</h2>
+          <p className="mt-3 leading-7 text-fog/70">
+            Грає сам, має 1 життя, вночі сильніший, вдень помітніший і отримує окремий приз за виживання.
           </p>
         </div>
       </div>

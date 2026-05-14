@@ -76,6 +76,7 @@ const textureByKind: Record<string, string> = {
   netherite_ingot: "netherite_ingot.png",
   netherite_leggings: "netherite_leggings.png",
   netherite_sword: "netherite_sword.png",
+  netherite_upgrade_smithing_template: "smithing_template.png",
   netherrack: "netherrack.png",
   oak_planks: "oak_planks.png",
   oak_log: "oak_log.png",
@@ -87,6 +88,7 @@ const textureByKind: Record<string, string> = {
   sand: "sand.png",
   shield: "shield.png",
   shears: "shears.png",
+  spawn_egg: "spawn_egg.png",
   shulker: "shulker_box.png",
   shulker_box: "shulker_box.png",
   shulker_shell: "shulker_shell.png",
@@ -141,6 +143,7 @@ const resourceKindBySlug: Record<string, string> = {
   furnaces: "furnace",
   tnt: "tnt",
   "netherite-ingots": "netherite_ingot",
+  "netherite-upgrade-templates": "netherite_upgrade_smithing_template",
   totems: "totem_of_undying",
   "ender-pearls": "ender_pearl",
   "golden-apples": "golden_apple",
@@ -157,6 +160,12 @@ const resourceKindBySlug: Record<string, string> = {
   "strength-potions": "potion",
   "regeneration-potions": "potion",
   "fire-resistance-potions": "potion",
+  "cow-spawn-eggs": "spawn_egg",
+  "sheep-spawn-eggs": "spawn_egg",
+  "pig-spawn-eggs": "spawn_egg",
+  "chicken-spawn-eggs": "spawn_egg",
+  "wolf-spawn-eggs": "spawn_egg",
+  "horse-spawn-eggs": "spawn_egg",
   "regular-bows": "bow",
   crossbows: "crossbow",
   "iron-swords": "iron_sword",
@@ -250,6 +259,8 @@ export function itemKindFromProduct(product: { name: string; slug: string; categ
   if (value.includes("зберіган") || value.includes("інвентар") || value.includes("inventory")) return "beacon";
   if (value.includes("друге життя") || value.includes("second-life")) return "totem_of_undying";
   if (product.slug === "full-god-kit" || value.includes("god kit") || value.includes("набір бога")) return "netherite_chestplate";
+  if (value.includes("яйц") || value.includes("spawn egg")) return "spawn_egg";
+  if (value.includes("шаблон") || value.includes("template")) return "netherite_upgrade_smithing_template";
   if ((value.includes("незерит") || value.includes("netherite")) && (value.includes("меч") || value.includes("sword"))) return "netherite_sword";
   if ((value.includes("алмаз") || value.includes("diamond")) && (value.includes("меч") || value.includes("sword"))) return "diamond_sword";
   if ((value.includes("незерит") || value.includes("netherite")) && (value.includes("нагруд") || value.includes("chestplate"))) return "netherite_chestplate";
@@ -306,6 +317,8 @@ export function itemKindFromText(text: string, fallback = "shulker_box"): string
   if (has("адмінське зілля", "зілля", "potion")) return "potion";
   if (has("варена яловичина", "ялович", "cooked beef", "cooked_beef")) return "cooked_beef";
   if (has("хліб", "bread")) return "bread";
+  if (has("яйц", "spawn egg", "spawn_egg")) return "spawn_egg";
+  if (has("шаблон", "template", "smithing")) return "netherite_upgrade_smithing_template";
 
   if (has("відро води", "відра води", "water bucket", "water_bucket")) return "water_bucket";
   if (has("відро лави", "відра лави", "lava bucket", "lava_bucket")) return "lava_bucket";

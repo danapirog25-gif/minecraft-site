@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, CreditCard, HelpCircle, PackageCheck, RefreshCw, ShieldCheck, Wallet } from "lucide-react";
-import { eventInfo, zombieVictoryRewardTalers } from "@/lib/event-info";
+import { banditRewardPercent, banditSoloRewardTalers, eventInfo, zombieVictoryRewardTalers } from "@/lib/event-info";
 import { formatTalers } from "@/lib/currency";
 
 export const metadata: Metadata = {
@@ -38,7 +38,7 @@ const questions = [
   {
     icon: Wallet,
     question: "Коли закінчується івент і хто отримує талери?",
-    answer: `Івент завершується, коли зомбі перемагають або люди прожили 100 Minecraft-днів. За перемогу зомбі всі активні учасники отримують по ${formatTalers(zombieVictoryRewardTalers)}, а за перемогу людей виплати йдуть тільки вижившим за таблицею на сторінці івенту.`
+    answer: `Івент завершується, коли зомбі перемагають або коли таймер доходить до 100 Minecraft-днів. За перемогу зомбі всі активні учасники отримують по ${formatTalers(zombieVictoryRewardTalers)}, за перемогу людей виплати йдуть вижившим за таблицею, а розбійник має окремий приз: ${formatTalers(banditSoloRewardTalers)} за соло-виживання або ${banditRewardPercent}% від виплати одного вижившого при подвійній перемозі.`
   },
   {
     icon: HelpCircle,
