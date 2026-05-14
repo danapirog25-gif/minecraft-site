@@ -277,12 +277,12 @@ const resourceDefinitions: ResourceDefinition[] = [
   },
   { name: "Незеритові злитки", slug: "netherite-ingots", item: "netherite_ingot", prices: [20, 35, 50] },
   {
-    name: "Незеритові покращення",
+    name: "Шаблон ковальства: незеритове покращення",
     slug: "netherite-upgrade-templates",
     item: "netherite_upgrade_smithing_template",
     counts: [1, 2, 4],
     prices: [45, 80, 140],
-    contentsLabel: "Шаблон незеритового покращення",
+    contentsLabel: "Шаблон ковальства: незеритове покращення",
     description: "Шаблони для апгрейду алмазних речей до незериту. Це рідкісний прогресійний предмет, тому продається малими наборами.",
     benefits: ["Відкриває незеритовий апгрейд без прямої видачі готової броні.", "Дорожчий за звичайні матеріали, бо сильно пришвидшує late-game прогрес."]
   },
@@ -322,7 +322,7 @@ const resourceDefinitions: ResourceDefinition[] = [
   { name: "Варена яловичина", slug: "cooked-beef", item: "cooked_beef", prices: [5, 9, 16] },
   { name: "Хліб", slug: "bread", item: "bread", prices: [4, 7, 12] },
   {
-    name: "Яйця корів",
+    name: "Яйце спавну корови",
     slug: "cow-spawn-eggs",
     item: "cow_spawn_egg",
     counts: nonStackableResourceCounts,
@@ -332,7 +332,7 @@ const resourceDefinitions: ResourceDefinition[] = [
     benefits: ["Дає ресурсний старт без прямої бойової переваги.", "Ціна вища за їжу, бо моб може дати повторний ресурс."]
   },
   {
-    name: "Яйця овець",
+    name: "Яйце спавну вівці",
     slug: "sheep-spawn-eggs",
     item: "sheep_spawn_egg",
     counts: nonStackableResourceCounts,
@@ -342,7 +342,7 @@ const resourceDefinitions: ResourceDefinition[] = [
     benefits: ["Корисні для ліжок, декору й запасної їжі.", "Не дають миттєвої бойової сили, але допомагають базі жити довше."]
   },
   {
-    name: "Яйця свиней",
+    name: "Яйце спавну свині",
     slug: "pig-spawn-eggs",
     item: "pig_spawn_egg",
     counts: nonStackableResourceCounts,
@@ -352,7 +352,7 @@ const resourceDefinitions: ResourceDefinition[] = [
     benefits: ["Дешевший варіант мирного моба.", "Підходить для баз, які хочуть стабільну їжу без готових великих наборів."]
   },
   {
-    name: "Яйця курей",
+    name: "Яйце спавну курки",
     slug: "chicken-spawn-eggs",
     item: "chicken_spawn_egg",
     counts: nonStackableResourceCounts,
@@ -362,7 +362,7 @@ const resourceDefinitions: ResourceDefinition[] = [
     benefits: ["Добре для довгого виживання й дрібних ферм.", "Пір'я може допомогти зі стрілами, але потребує часу й крафту."]
   },
   {
-    name: "Яйця вовків",
+    name: "Яйце спавну вовка",
     slug: "wolf-spawn-eggs",
     item: "wolf_spawn_egg",
     counts: nonStackableResourceCounts,
@@ -372,7 +372,7 @@ const resourceDefinitions: ResourceDefinition[] = [
     benefits: ["Потребують приручення й контролю, тому залишаються ситуативними.", "Дорожчі за фермерських мобів через потенціал у бою."]
   },
   {
-    name: "Яйця коней",
+    name: "Яйце спавну коня",
     slug: "horse-spawn-eggs",
     item: "horse_spawn_egg",
     counts: nonStackableResourceCounts,
