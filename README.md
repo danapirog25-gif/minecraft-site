@@ -165,7 +165,8 @@ USER_SESSION_SECRET="інший-довгий-випадковий-секрет"
 
 Додані окремі ресурси для прогресії й ферм:
 
-- `netherite-upgrade-templates-x1/x2/x4` — 45 / 80 / 140 талерів.
+- `netherite-ingots-x16/x32/x64` — 120 / 220 / 400 талерів.
+- `netherite-upgrade-templates-x1/x2/x4` — 150 / 270 / 480 талерів.
 - `cow-spawn-eggs-x1/x3/x6` — 18 / 45 / 80 талерів.
 - `sheep-spawn-eggs-x1/x3/x6` — 16 / 40 / 72 талери.
 - `pig-spawn-eggs-x1/x3/x6` — 14 / 35 / 62 талери.

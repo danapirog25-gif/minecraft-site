@@ -51,21 +51,21 @@ const popular = [
     name: "Комплект виживання",
     slug: "survival-shulker",
     category: "Виживання",
-    price: "120 талерів",
+    price: "110 талерів",
     iconKind: "shulker_box"
   },
   {
     name: "Бойовий комплект",
     slug: "combat-shulker",
     category: "Бій",
-    price: "160 талерів",
+    price: "150 талерів",
     iconKind: "diamond_sword"
   },
   {
     name: "Набір Бога: адмін-чари",
     slug: "full-god-kit",
     category: "Суперпредмети",
-    price: "500 талерів",
+    price: "950 талерів",
     iconKind: "netherite_chestplate"
   }
 ];

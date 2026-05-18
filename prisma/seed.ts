@@ -275,13 +275,13 @@ const resourceDefinitions: ResourceDefinition[] = [
     description: "ТНТ для контрольованих рейдів, пасток і швидкого прориву. Використання має відповідати правилам івенту.",
     benefits: ["Сильний інструмент атаки, тому коштує помітно дорожче за блоки.", "Підходить для командних штурмів і пасток."]
   },
-  { name: "Незеритові злитки", slug: "netherite-ingots", item: "netherite_ingot", prices: [20, 35, 50] },
+  { name: "Незеритові злитки", slug: "netherite-ingots", item: "netherite_ingot", prices: [120, 220, 400] },
   {
     name: "Шаблон ковальства: незеритове покращення",
     slug: "netherite-upgrade-templates",
     item: "netherite_upgrade_smithing_template",
     counts: [1, 2, 4],
-    prices: [45, 80, 140],
+    prices: [150, 270, 480],
     contentsLabel: "Шаблон ковальства: незеритове покращення",
     description: "Шаблони для апгрейду алмазних речей до незериту. Це рідкісний прогресійний предмет, тому продається малими наборами.",
     benefits: ["Відкриває незеритовий апгрейд без прямої видачі готової броні.", "Дорожчий за звичайні матеріали, бо сильно пришвидшує late-game прогрес."]
@@ -386,7 +386,7 @@ const resourceDefinitions: ResourceDefinition[] = [
     slug: "water-buckets",
     item: "water_bucket",
     counts: nonStackableResourceCounts,
-    prices: [12, 30, 55],
+    prices: [10, 24, 45],
     contentsLabel: "Відро води",
     description: "Вода для сейву від падіння, гасіння вогню, проходів і швидких оборонних рішень.",
     benefits: ["Дуже корисна утиліті-річ без прямої бойової сили.", "Працює для будівництва, втечі й захисту."]
@@ -406,7 +406,7 @@ const resourceDefinitions: ResourceDefinition[] = [
     slug: "milk-buckets",
     item: "milk_bucket",
     counts: nonStackableResourceCounts,
-    prices: [14, 36, 66],
+    prices: [12, 30, 55],
     contentsLabel: "Відро молока",
     description: "Молоко для зняття небажаних ефектів після зілля, мобів або пасток.",
     benefits: ["Допомагає пережити негативні ефекти.", "Корисне для гравців, які часто йдуть у бій."]
@@ -416,7 +416,7 @@ const resourceDefinitions: ResourceDefinition[] = [
     slug: "healing-potions",
     item: "potion",
     counts: nonStackableResourceCounts,
-    prices: [18, 48, 90],
+    prices: [16, 42, 78],
     commandNbt: `{Potion:"minecraft:healing"}`,
     contentsLabel: "Зілля миттєвого лікування",
     description: "Звичайні survival-зілля лікування без адмінських ефектів. Корисні в бою, але не ламають баланс.",
@@ -427,7 +427,7 @@ const resourceDefinitions: ResourceDefinition[] = [
     slug: "swiftness-potions",
     item: "potion",
     counts: nonStackableResourceCounts,
-    prices: [16, 44, 82],
+    prices: [14, 38, 72],
     commandNbt: `{Potion:"minecraft:swiftness"}`,
     contentsLabel: "Зілля швидкості",
     description: "Звичайні зілля швидкості для втечі, переслідування або швидкого добігання до бази.",
@@ -662,7 +662,7 @@ const resourceDefinitions: ResourceDefinition[] = [
     slug: "netherite-swords",
     item: "netherite_sword",
     counts: nonStackableResourceCounts,
-    prices: [120, 240, 420],
+    prices: [220, 420, 760],
     commandNbt: adminNetheriteSwordNbt,
     contentsLabel: "Незеритовий меч із Sharpness X, Looting VII та Unbreaking XII",
     description: "Адмінський незеритовий меч із чарами вище survival-лімітів. Це вже не просто меч, а бос-лут.",
@@ -684,7 +684,7 @@ const resourceDefinitions: ResourceDefinition[] = [
     slug: "netherite-chestplates",
     item: "netherite_chestplate",
     counts: nonStackableResourceCounts,
-    prices: [150, 300, 520],
+    prices: [280, 540, 950],
     commandNbt: adminNetheriteArmorNbt,
     contentsLabel: "Незеритовий нагрудник із Protection X, Thorns VI та всіма типами захисту",
     description: "Найдорожча одиночна броня серед ресурсів: незеритовий нагрудник із адмін-рівнями й несумісними захистами.",
@@ -803,7 +803,7 @@ const products: SeedProduct[] = [
     name: "Старт будівельника",
     slug: "builder-start",
     description: "Дешевий старт для гравця, який одразу будує стіни, проходи й базові укриття.",
-    price: 75,
+    price: 65,
     category: "starter",
     team: "all",
     contents: [
@@ -824,7 +824,7 @@ const products: SeedProduct[] = [
     name: "Старт лучника",
     slug: "archer-start",
     description: "Старт для дистанційної гри: броня, лук, багато стріл і базові ресурси для позиції.",
-    price: 85,
+    price: 80,
     category: "starter",
     team: "all",
     contents: [
@@ -845,7 +845,7 @@ const products: SeedProduct[] = [
     name: "Старт медика",
     slug: "medic-start",
     description: "Підтримка для команди: їжа, щит, лікування, швидкість і достатньо блоків, щоб дожити до замісу.",
-    price: 95,
+    price: 85,
     category: "starter",
     team: "all",
     contents: [
@@ -866,7 +866,7 @@ const products: SeedProduct[] = [
     name: "Старт розвідника",
     slug: "scout-start",
     description: "Швидкий старт для розвідки, обходів і повернення на позицію після небезпечних моментів.",
-    price: 100,
+    price: 90,
     category: "starter",
     team: "all",
     contents: [
@@ -909,7 +909,7 @@ const products: SeedProduct[] = [
     name: "Люди: медик бази",
     slug: "humans-base-medic",
     description: "Підтримка саме для команди людей: лікування, регенерація, їжа й запас для швидкого сейву союзників.",
-    price: 115,
+    price: 100,
     category: "starter",
     team: "humans",
     contents: [
@@ -1165,7 +1165,7 @@ const products: SeedProduct[] = [
     name: "Люди: Бог-Фортеця",
     slug: "humans-god-fortress",
     description: "God-набір саме для людей: адмін-броня, лук контролю, тотеми, маяк і ресурси для неприємно міцної оборони.",
-    price: 460,
+    price: 430,
     category: "gods",
     team: "humans",
     contents: [
@@ -1191,7 +1191,7 @@ const products: SeedProduct[] = [
     name: "Люди: максимальний сет виживання",
     slug: "humans-max-survival-set",
     description: "Максимальний god-набір саме для людей: повний незеритовий адмін-захист, лук, тотеми, маяк і ресурси для останніх 100 днів.",
-    price: 540,
+    price: 850,
     category: "gods",
     team: "humans",
     contents: [
@@ -1219,7 +1219,7 @@ const products: SeedProduct[] = [
     name: "Зомбі: Бог-Інфектор",
     slug: "zombies-god-infector",
     description: "God-набір саме для зомбі: адмін-зброя, швидкість, перли, ТНТ і все для вирішального прориву.",
-    price: 460,
+    price: 620,
     category: "gods",
     team: "zombies",
     contents: [
@@ -1245,7 +1245,7 @@ const products: SeedProduct[] = [
     name: "Зомбі: максимальний сет апокаліпсису",
     slug: "zombies-max-apocalypse-set",
     description: "Максимальний god-набір саме для зомбі: незеритовий адмін-сет, рейдова зброя, перли, ТНТ і тотеми для фінальної хвилі.",
-    price: 540,
+    price: 880,
     category: "gods",
     team: "zombies",
     contents: [
@@ -1273,7 +1273,7 @@ const products: SeedProduct[] = [
     name: "Комплект виживання",
     slug: "survival-shulker",
     description: "Комплект для довшої гри: ресурси, блоки, їжа, інструменти й повний захисний мінімум без зайвого контейнера.",
-    price: 120,
+    price: 110,
     category: "survival_shulkers",
     team: "all",
     contents: [
@@ -1300,7 +1300,7 @@ const products: SeedProduct[] = [
     name: "Комплект будівельника",
     slug: "builder-shulker",
     description: "Багато блоків і корисних інструментів для стін, проходів, аварійних барикад і ремонту.",
-    price: 140,
+    price: 125,
     category: "survival_shulkers",
     team: "all",
     contents: [
@@ -1327,7 +1327,7 @@ const products: SeedProduct[] = [
     name: "Комплект шахтаря",
     slug: "miner-shulker",
     description: "Набір для видобутку, тунелів і швидкого ремонту проходів: кирки, світло, їжа й базовий захист.",
-    price: 135,
+    price: 120,
     category: "survival_shulkers",
     team: "all",
     contents: [
@@ -1349,7 +1349,7 @@ const products: SeedProduct[] = [
     name: "Комплект оборони бази",
     slug: "base-defense-shulker",
     description: "Ресурсний комплект для укріплення бази: міцні блоки, скло, лава, вода й запас світла.",
-    price: 175,
+    price: 165,
     category: "survival_shulkers",
     team: "all",
     contents: [
@@ -1393,7 +1393,7 @@ const products: SeedProduct[] = [
     name: "Командний склад",
     slug: "team-storage-shulker",
     description: "Великий командний набір для складу: шалкери, їжа, матеріали, світло й базові ресурси.",
-    price: 190,
+    price: 175,
     category: "survival_shulkers",
     team: "all",
     contents: [
@@ -1415,7 +1415,7 @@ const products: SeedProduct[] = [
     name: "Портальний комплект",
     slug: "portal-shulker",
     description: "Набір для порталу, швидких переходів і контролю небезпечних точок.",
-    price: 155,
+    price: 140,
     category: "survival_shulkers",
     team: "all",
     contents: [
@@ -1437,7 +1437,7 @@ const products: SeedProduct[] = [
     name: "Бойовий комплект",
     slug: "combat-shulker",
     description: "Бойовий комплект із алмазним мечем, луком, перлами, яблуками та зіллям для активного раунду.",
-    price: 160,
+    price: 150,
     category: "combat_shulkers",
     team: "all",
     contents: [
@@ -1536,7 +1536,7 @@ const products: SeedProduct[] = [
     name: "Комплект снайпера",
     slug: "sniper-combat-kit",
     description: "Дистанційний комплект із луком, арбалетом, стрілами, перлами й зіллям швидкості.",
-    price: 180,
+    price: 165,
     category: "combat_shulkers",
     team: "all",
     contents: [
@@ -1558,7 +1558,7 @@ const products: SeedProduct[] = [
     name: "Комплект алхіміка",
     slug: "alchemist-combat-kit",
     description: "Бойова підтримка на зіллях: сила, швидкість, регенерація, лікування й вогнестійкість.",
-    price: 200,
+    price: 185,
     category: "combat_shulkers",
     team: "all",
     contents: [
@@ -1602,7 +1602,7 @@ const products: SeedProduct[] = [
     name: "Меч Бога: адмін-чари",
     slug: "god-sword",
     description: "Незеритовий клинок із Sharpness X, Looting VII та Unbreaking XII. Це survival-неможлива зброя для моменту, коли треба прорвати хвилю.",
-    price: 200,
+    price: 320,
     category: "gods",
     team: "all",
     contents: [
@@ -1641,7 +1641,7 @@ const products: SeedProduct[] = [
     name: "Набір Бога Танка: незламна оборона",
     slug: "god-tank-kit",
     description: "Преміум-набір для гравця, який тримає базу або вузький прохід: адмін-броня, тотеми, щити, регенерація й міцні блоки.",
-    price: 380,
+    price: 350,
     category: "gods",
     team: "all",
     contents: [
@@ -1713,7 +1713,7 @@ const products: SeedProduct[] = [
     name: "Набір Бога Рейдера: прорив хвилі",
     slug: "god-raider-kit",
     description: "Атакувальний преміум-набір із незеритовою адмін-зброєю, луком рейду, тотемом, перлами й мінімальним запасом для прориву.",
-    price: 450,
+    price: 650,
     category: "gods",
     team: "all",
     contents: [
@@ -1766,7 +1766,7 @@ const products: SeedProduct[] = [
     name: "Повний набір Бога: неможливий сет",
     slug: "full-god-kit",
     description: "Максимальний адмін-комплект за талери: незерит із Protection X, меч Sharpness X, сокира, лук рейду, тотеми, зілля й блоки.",
-    price: 500,
+    price: 950,
     category: "gods",
     team: "all",
     contents: [
