@@ -1,5 +1,6 @@
 import type { ProductSnapshot } from "@/lib/catalog";
 import { formatTalers } from "@/lib/currency";
+import { formatProductCustomizationLines } from "@/lib/product-customizations";
 
 type OrderNotificationInput = {
   orderId: string;
@@ -19,7 +20,15 @@ export async function notifyOrderCreated(input: OrderNotificationInput) {
     return;
   }
 
-  const productList = input.products.map((product) => `- ${product.name} (${formatTalers(product.price)})`).join("\n");
+  const productList = input.products
+    .map((product) => {
+      const customization = formatProductCustomizationLines(product.customization)
+        .map((line) => `  ${line}`)
+        .join("\n");
+
+      return `- ${product.name} (${formatTalers(product.price)})${customization ? `\n${customization}` : ""}`;
+    })
+    .join("\n");
   const content = [
     "**Нове замовлення в Zombie Event Shop**",
     `Гравець: ${input.playerNickname}`,

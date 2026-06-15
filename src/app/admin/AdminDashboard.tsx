@@ -30,6 +30,7 @@ import {
   teamLabels
 } from "@/lib/catalog";
 import { formatHryvnias, formatTalers } from "@/lib/currency";
+import { formatProductCustomizationLines } from "@/lib/product-customizations";
 
 type AdminDashboardProps = {
   initialAuthenticated: boolean;
@@ -223,7 +224,12 @@ export default function AdminDashboard({ initialAuthenticated }: AdminDashboardP
   function commandsForOrder(order: Order) {
     const snapshot = parseOrderProducts(order.products);
     return snapshot.flatMap((product) =>
-      product.itemsCommands.map((command) => commandForNickname(command, order.playerNickname))
+      product.itemsCommands.map((command) =>
+        commandForNickname(command, order.playerNickname, product.customization, {
+          contact: order.contact,
+          email: order.email ?? ""
+        })
+      )
     );
   }
 
@@ -1196,11 +1202,24 @@ export default function AdminDashboard({ initialAuthenticated }: AdminDashboardP
                   </div>
                   <div>
                     <p className="text-sm font-black uppercase text-fog/50">Товар</p>
-                    {snapshot.map((product) => (
-                      <p key={product.id} className="mt-2 font-bold text-white">
-                        {product.name}
-                      </p>
-                    ))}
+                    {snapshot.map((product) => {
+                      const customizationLines = formatProductCustomizationLines(product.customization);
+
+                      return (
+                        <div key={product.id} className="mt-2">
+                          <p className="font-bold text-white">{product.name}</p>
+                          {customizationLines.length ? (
+                            <div className="mt-2 space-y-1 rounded-sm border border-gold/30 bg-gold/10 p-2">
+                              {customizationLines.map((line) => (
+                                <p key={line} className="text-xs font-bold leading-5 text-gold">
+                                  {line}
+                                </p>
+                              ))}
+                            </div>
+                          ) : null}
+                        </div>
+                      );
+                    })}
                     <p className="mt-3 text-xl font-black text-acid">{formatTalers(order.totalAmount)}</p>
                   </div>
                   <div>

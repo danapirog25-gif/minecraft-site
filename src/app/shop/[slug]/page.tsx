@@ -13,6 +13,7 @@ import { ItemIcon, itemKindFromProduct, itemKindFromText } from "@/components/It
 import { prisma } from "@/lib/prisma";
 import { categoryLabels, parseTextList, teamLabels } from "@/lib/catalog";
 import { formatTalers } from "@/lib/currency";
+import { isCustomDiscordRoleProduct } from "@/lib/product-customizations";
 
 export const dynamic = "force-dynamic";
 
@@ -119,6 +120,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const isLegendary = product.category === "gods";
   const isResource = product.category === "single_resources";
   const isAdminResource = isResource && /-x(?:1|3|6)$/.test(product.slug);
+  const isCustomRole = isCustomDiscordRoleProduct(product);
   const iconKind = itemKindFromProduct(product);
 
   return (
@@ -154,6 +156,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
               {isAdminResource ? (
                 <span className="rounded-sm border border-gold/35 bg-gold/10 px-3 py-1 text-xs font-black uppercase text-gold">
                   Неможливо у survival
+                </span>
+              ) : null}
+              {isCustomRole ? (
+                <span className="rounded-sm border border-ward/35 bg-ward/10 px-3 py-1 text-xs font-black uppercase text-ward">
+                  Discord
                 </span>
               ) : null}
               <span className="rounded-sm border border-white/10 bg-white/5 px-3 py-1 text-xs font-black uppercase text-fog/70">

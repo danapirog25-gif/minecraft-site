@@ -6,6 +6,7 @@ import { ItemIcon } from "@/components/ItemIcon";
 import { LogoutButton } from "@/components/LogoutButton";
 import { parseOrderProducts } from "@/lib/catalog";
 import { formatTalers } from "@/lib/currency";
+import { formatProductCustomizationLines } from "@/lib/product-customizations";
 import { prisma } from "@/lib/prisma";
 import { getStoreSettings } from "@/lib/store-settings";
 import { getCurrentUser } from "@/lib/user-auth";
@@ -203,6 +204,17 @@ export default async function AccountPage() {
                         <h3 className="mt-4 text-xl font-black text-white">
                           {products.map((product) => product.name).join(", ") || "Замовлення"}
                         </h3>
+                        {products.some((product) => product.customization) ? (
+                          <div className="mt-3 grid gap-2">
+                            {products.flatMap((product) =>
+                              formatProductCustomizationLines(product.customization).map((line) => (
+                                <p key={`${product.id}-${line}`} className="w-fit rounded-sm border border-gold/30 bg-gold/10 px-3 py-1.5 text-xs font-bold text-gold">
+                                  {line}
+                                </p>
+                              ))
+                            )}
+                          </div>
+                        ) : null}
                         <p className="mt-2 text-sm text-fog/60">Нік: {order.playerNickname}</p>
                         <p className="mt-3 text-sm leading-6 text-fog/62">{view.note}</p>
                       </div>

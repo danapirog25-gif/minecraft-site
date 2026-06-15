@@ -2,7 +2,19 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Loader2, MessageCircle, PackageCheck, Trash2, UserRound, Wallet } from "lucide-react";
+import {
+  ArrowRight,
+  AtSign,
+  BadgeCheck,
+  Loader2,
+  MessageCircle,
+  PackageCheck,
+  Palette,
+  Sparkles,
+  Trash2,
+  UserRound,
+  Wallet
+} from "lucide-react";
 import { ItemIcon } from "@/components/ItemIcon";
 import {
   CartProduct,
@@ -11,6 +23,14 @@ import {
   removeCartProduct
 } from "@/components/cart-storage";
 import { formatTalers } from "@/lib/currency";
+import {
+  CUSTOM_ROLE_COLOR_PRESETS,
+  isCustomDiscordRoleProduct,
+  isValidDiscordRoleName,
+  isValidDiscordUsername,
+  normalizeRoleColor,
+  type DiscordRoleCustomization
+} from "@/lib/product-customizations";
 
 type CartClientProps = {
   initialUser: {
@@ -21,26 +41,77 @@ type CartClientProps = {
   } | null;
 };
 
+type RoleRequests = Record<string, DiscordRoleCustomization>;
+
+function defaultRoleRequest(contact = ""): DiscordRoleCustomization {
+  return {
+    type: "discord_role",
+    discordUsername: contact,
+    roleName: "",
+    roleColor: CUSTOM_ROLE_COLOR_PRESETS[0]
+  };
+}
+
+function ensureRoleRequests(items: CartProduct[], current: RoleRequests, contact = "") {
+  const next: RoleRequests = {};
+
+  for (const item of items) {
+    if (isCustomDiscordRoleProduct(item)) {
+      next[item.id] = current[item.id] ?? defaultRoleRequest(contact);
+    }
+  }
+
+  return next;
+}
+
+function isRoleRequestValid(request: DiscordRoleCustomization | undefined) {
+  return Boolean(
+    request &&
+      isValidDiscordUsername(request.discordUsername) &&
+      isValidDiscordRoleName(request.roleName) &&
+      /^#?[0-9A-Fa-f]{6}$/.test(request.roleColor)
+  );
+}
+
 export function CartClient({ initialUser }: CartClientProps) {
   const [items, setItems] = useState<CartProduct[]>([]);
   const [contact, setContact] = useState(initialUser?.contact ?? "");
+  const [roleRequests, setRoleRequests] = useState<RoleRequests>({});
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    setItems(readCartProducts());
-  }, []);
+    const storedItems = readCartProducts();
+    setItems(storedItems);
+    setRoleRequests((current) => ensureRoleRequests(storedItems, current, initialUser?.contact ?? ""));
+  }, [initialUser?.contact]);
 
   const total = useMemo(() => items.reduce((sum, item) => sum + item.price, 0), [items]);
-  const canCheckout = Boolean(initialUser) && items.length > 0 && initialUser!.balance >= total;
+  const customRoleItems = useMemo(() => items.filter(isCustomDiscordRoleProduct), [items]);
+  const hasValidRoleRequests = customRoleItems.every((item) => isRoleRequestValid(roleRequests[item.id]));
+  const canCheckout = Boolean(initialUser) && items.length > 0 && initialUser!.balance >= total && hasValidRoleRequests;
 
   function removeItem(productId: string) {
-    setItems(removeCartProduct(productId));
+    const nextItems = removeCartProduct(productId);
+    setItems(nextItems);
+    setRoleRequests((current) => ensureRoleRequests(nextItems, current, initialUser?.contact ?? ""));
   }
 
   function clearCart() {
     clearCartProducts();
     setItems([]);
+    setRoleRequests({});
+  }
+
+  function updateRoleRequest(productId: string, patch: Partial<DiscordRoleCustomization>) {
+    setRoleRequests((current) => ({
+      ...current,
+      [productId]: {
+        ...(current[productId] ?? defaultRoleRequest(initialUser?.contact ?? "")),
+        ...patch,
+        type: "discord_role"
+      }
+    }));
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -61,7 +132,23 @@ export function CartClient({ initialUser }: CartClientProps) {
         },
         body: JSON.stringify({
           productIds: items.map((item) => item.id),
-          contact: contact.trim()
+          contact: contact.trim(),
+          customizations: customRoleItems.length
+            ? Object.fromEntries(
+                customRoleItems.map((item) => {
+                  const roleRequest = roleRequests[item.id] ?? defaultRoleRequest(initialUser?.contact ?? "");
+                  return [
+                    item.id,
+                    {
+                      type: "discord_role",
+                      discordUsername: roleRequest.discordUsername.trim(),
+                      roleName: roleRequest.roleName.trim(),
+                      roleColor: normalizeRoleColor(roleRequest.roleColor)
+                    }
+                  ];
+                })
+              )
+            : undefined
         })
       });
 
@@ -112,6 +199,102 @@ export function CartClient({ initialUser }: CartClientProps) {
                   </button>
                 </div>
               </div>
+
+              {isCustomDiscordRoleProduct(item) ? (
+                <section className="mt-5 rounded-sm border border-gold/35 bg-gold/10 p-4 shadow-goldglow">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <p className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-wide text-gold">
+                        <Sparkles size={16} />
+                        Дані для Discord-ролі
+                      </p>
+                      <p className="mt-2 text-sm leading-6 text-fog/70">
+                        Заповніть Discord-нік, назву та колір ролі. Без цих даних адмін не зможе її видати.
+                      </p>
+                    </div>
+                    <div className="rounded-sm border border-white/10 bg-black/35 p-3 text-right">
+                      <p className="text-xs font-black uppercase text-fog/45">Превʼю</p>
+                      <div
+                        className="mt-2 inline-flex items-center gap-2 rounded-sm border px-3 py-2 text-sm font-black"
+                        style={{
+                          borderColor: `${normalizeRoleColor(roleRequests[item.id]?.roleColor ?? CUSTOM_ROLE_COLOR_PRESETS[0])}88`,
+                          backgroundColor: `${normalizeRoleColor(roleRequests[item.id]?.roleColor ?? CUSTOM_ROLE_COLOR_PRESETS[0])}1F`,
+                          color: normalizeRoleColor(roleRequests[item.id]?.roleColor ?? CUSTOM_ROLE_COLOR_PRESETS[0])
+                        }}
+                      >
+                        <BadgeCheck size={16} />
+                        {roleRequests[item.id]?.roleName.trim() || "Назва ролі"}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-5 grid gap-4 md:grid-cols-2">
+                    <label className="grid gap-2">
+                      <span className="inline-flex items-center gap-2 text-sm font-black uppercase text-fog/70">
+                        <AtSign size={16} className="text-ward" />
+                        Discord-нік
+                      </span>
+                      <input
+                        required
+                        minLength={2}
+                        maxLength={80}
+                        value={roleRequests[item.id]?.discordUsername ?? ""}
+                        onChange={(event) => updateRoleRequest(item.id, { discordUsername: event.target.value })}
+                        className="rounded-sm border border-white/20 bg-black/30 px-4 py-3 text-white outline-none transition placeholder:text-fog/40 focus:border-gold focus:shadow-goldglow"
+                        placeholder="@nickname або username"
+                      />
+                    </label>
+                    <label className="grid gap-2">
+                      <span className="inline-flex items-center gap-2 text-sm font-black uppercase text-fog/70">
+                        <BadgeCheck size={16} className="text-gold" />
+                        Назва ролі
+                      </span>
+                      <input
+                        required
+                        minLength={2}
+                        maxLength={40}
+                        value={roleRequests[item.id]?.roleName ?? ""}
+                        onChange={(event) => updateRoleRequest(item.id, { roleName: event.target.value })}
+                        className="rounded-sm border border-white/20 bg-black/30 px-4 py-3 text-white outline-none transition placeholder:text-fog/40 focus:border-gold focus:shadow-goldglow"
+                        placeholder="Наприклад: Легенда івенту"
+                      />
+                    </label>
+                  </div>
+
+                  <div className="mt-4 grid gap-3">
+                    <span className="inline-flex items-center gap-2 text-sm font-black uppercase text-fog/70">
+                      <Palette size={16} className="text-acid" />
+                      Колір ролі
+                    </span>
+                    <div className="grid gap-3 md:grid-cols-[1fr_180px] md:items-center">
+                      <div className="flex flex-wrap gap-2">
+                        {CUSTOM_ROLE_COLOR_PRESETS.map((color) => {
+                          const activeColor = normalizeRoleColor(roleRequests[item.id]?.roleColor ?? CUSTOM_ROLE_COLOR_PRESETS[0]);
+                          return (
+                            <button
+                              key={color}
+                              type="button"
+                              onClick={() => updateRoleRequest(item.id, { roleColor: color })}
+                              className={`h-10 w-10 rounded-sm border transition hover:-translate-y-1 ${
+                                activeColor === color ? "border-white ring-2 ring-gold/60" : "border-white/20"
+                              }`}
+                              style={{ backgroundColor: color }}
+                              aria-label={`Обрати колір ${color}`}
+                            />
+                          );
+                        })}
+                      </div>
+                      <input
+                        value={roleRequests[item.id]?.roleColor ?? CUSTOM_ROLE_COLOR_PRESETS[0]}
+                        onChange={(event) => updateRoleRequest(item.id, { roleColor: event.target.value.toUpperCase() })}
+                        className="rounded-sm border border-white/20 bg-black/30 px-3 py-3 font-mono text-sm uppercase text-white outline-none transition focus:border-gold focus:shadow-goldglow"
+                        placeholder="#FACC15"
+                        pattern="#?[0-9A-Fa-f]{6}"
+                      />
+                    </div>
+                  </div>
+                </section>
+              ) : null}
             </article>
           ))
         ) : (
@@ -188,6 +371,12 @@ export function CartClient({ initialUser }: CartClientProps) {
                 <Link href="/top-up" className="ml-2 font-black text-acid transition hover:text-white">
                   Поповнити баланс
                 </Link>
+              </div>
+            ) : null}
+
+            {customRoleItems.length > 0 && !hasValidRoleRequests ? (
+              <div className="rounded-sm border border-gold/35 bg-gold/10 p-4 text-sm leading-6 text-gold">
+                Для кастомної Discord-ролі заповніть Discord-нік, назву ролі 2-40 символів і коректний hex-колір.
               </div>
             ) : null}
 

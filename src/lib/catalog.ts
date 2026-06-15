@@ -1,4 +1,9 @@
 import { formatTalers } from "@/lib/currency";
+import {
+  customizationCommandVariables,
+  isProductCustomization,
+  type ProductCustomization
+} from "@/lib/product-customizations";
 
 export const categoryMeta = [
   {
@@ -52,6 +57,7 @@ export type ProductSnapshot = {
   category: string;
   team: string;
   itemsCommands: string[];
+  customization?: ProductCustomization;
 };
 
 export function parseCommands(value: string | null | undefined): string[] {
@@ -103,7 +109,7 @@ export function toProductSnapshot(product: {
   category: string;
   team: string;
   itemsCommands: string;
-}): ProductSnapshot {
+}, customization?: ProductCustomization): ProductSnapshot {
   return {
     id: product.id,
     name: product.name,
@@ -112,7 +118,8 @@ export function toProductSnapshot(product: {
     price: product.price,
     category: product.category,
     team: product.team,
-    itemsCommands: parseCommands(product.itemsCommands)
+    itemsCommands: parseCommands(product.itemsCommands),
+    ...(customization ? { customization } : {})
   };
 }
 
@@ -134,7 +141,8 @@ export function parseOrderProducts(value: string | null | undefined): ProductSna
         typeof item.id === "string" &&
         typeof item.name === "string" &&
         typeof item.price === "number" &&
-        Array.isArray(item.itemsCommands)
+        Array.isArray(item.itemsCommands) &&
+        (item.customization === undefined || isProductCustomization(item.customization))
       );
     });
   } catch {
@@ -146,8 +154,22 @@ export function formatPrice(amount: number): string {
   return formatTalers(amount);
 }
 
-export function commandForNickname(command: string, nickname: string): string {
-  return command.replaceAll("{nickname}", nickname);
+export function commandForNickname(
+  command: string,
+  nickname: string,
+  customization?: ProductCustomization,
+  variables: Record<string, string> = {}
+): string {
+  const replacements = {
+    nickname,
+    ...customizationCommandVariables(customization),
+    ...variables
+  };
+
+  return Object.entries(replacements).reduce(
+    (result, [key, value]) => result.replaceAll(`{${key}}`, value),
+    command
+  );
 }
 
 export function slugify(value: string): string {

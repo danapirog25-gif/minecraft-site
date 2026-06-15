@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { CUSTOM_DISCORD_ROLE_SLUG } from "../src/lib/product-customizations";
 
 const prisma = new PrismaClient();
 
@@ -1806,6 +1807,28 @@ const products: SeedProduct[] = [
     ],
     benefits: ["Найдорожчий рофл-предмет у магазині.", "Не дає бойової переваги, зате створює дуже помітний момент."],
     itemsCommands: [give("suspicious_stew", 1, smurfMushroomNbt)]
+  },
+  {
+    name: "Кастомна Discord-роль",
+    slug: CUSTOM_DISCORD_ROLE_SLUG,
+    description: "Персональна роль у Discord-сервері івенту: гравець сам обирає назву та колір, а адміністратор видає роль після покупки.",
+    price: 80,
+    category: "event_perks",
+    team: "all",
+    contents: [
+      "Власна назва ролі у Discord — 1 шт.",
+      "Обраний hex-колір ролі — 1 шт.",
+      "Видача ролі на вказаний Discord-акаунт"
+    ],
+    benefits: [
+      "Дає помітний персональний бейдж у Discord без впливу на баланс Minecraft-івенту.",
+      "Покупець одразу залишає назву, колір і Discord-нік, тож адмін бачить усе в замовленні."
+    ],
+    itemsCommands: [
+      `Discord: створити роль "{discordRoleName}" кольору {discordRoleColor}`,
+      `Discord: видати роль "{discordRoleName}" користувачу {discordUsername}`,
+      `Контакт для уточнення: {contact}`
+    ]
   },
   {
     name: "Компас людей: пошук зомбі",

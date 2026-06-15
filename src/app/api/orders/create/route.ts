@@ -1,17 +1,35 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { toProductSnapshot } from "@/lib/catalog";
+import { toProductSnapshot, type ProductSnapshot } from "@/lib/catalog";
 import { notifyOrderCreated } from "@/lib/notifications";
+import {
+  isCustomDiscordRoleProduct,
+  isValidDiscordRoleName,
+  isValidDiscordUsername,
+  normalizeRoleColor
+} from "@/lib/product-customizations";
 import { getCurrentUser } from "@/lib/user-auth";
 import { WalletError } from "@/lib/wallet";
 
 export const runtime = "nodejs";
 
+const discordRoleCustomizationSchema = z.object({
+  type: z.literal("discord_role"),
+  discordUsername: z.string().trim().refine(isValidDiscordUsername, {
+    message: "Вкажіть коректний Discord-нік"
+  }),
+  roleName: z.string().trim().refine(isValidDiscordRoleName, {
+    message: "Назва Discord-ролі має бути від 2 до 40 символів і не може бути @everyone або @here"
+  }),
+  roleColor: z.string().trim().regex(/^#?[0-9A-Fa-f]{6}$/, "Колір ролі має бути у форматі #A1B2C3").transform(normalizeRoleColor)
+});
+
 const createOrderSchema = z.object({
   productId: z.string().min(1).optional(),
   productIds: z.array(z.string().min(1)).min(1).max(24).optional(),
-  contact: z.string().min(3).max(80)
+  contact: z.string().min(3).max(80),
+  customizations: z.record(discordRoleCustomizationSchema).optional()
 }).refine((value) => Boolean(value.productId || value.productIds?.length), {
   message: "Оберіть хоча б один товар"
 });
@@ -52,7 +70,26 @@ export async function POST(request: Request) {
   const orderedProducts = productIds
     .map((id) => products.find((product) => product.id === id))
     .filter((product): product is (typeof products)[number] => Boolean(product));
-  const snapshots = orderedProducts.map(toProductSnapshot);
+  const customizations = parsed.data.customizations ?? {};
+  const snapshots: ProductSnapshot[] = [];
+
+  for (const product of orderedProducts) {
+    if (!isCustomDiscordRoleProduct(product)) {
+      snapshots.push(toProductSnapshot(product));
+      continue;
+    }
+
+    const customization = customizations[product.id];
+
+    if (!customization) {
+      return NextResponse.json(
+        { error: "Заповніть Discord-нік, назву ролі та колір для кастомної Discord-ролі." },
+        { status: 400 }
+      );
+    }
+
+    snapshots.push(toProductSnapshot(product, customization));
+  }
   const totalAmount = orderedProducts.reduce((sum, product) => sum + product.price, 0);
   const orderDescription =
     orderedProducts.length === 1

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { CUSTOM_DISCORD_ROLE_SLUG } from "@/lib/product-customizations";
 
 type ItemIconProps = {
   kind: string;
@@ -198,6 +199,7 @@ const resourceKindBySlug: Record<string, string> = {
 };
 
 const productKindBySlug: Record<string, string> = {
+  [CUSTOM_DISCORD_ROLE_SLUG]: "gold_ingot",
   "builder-start": "cobblestone",
   "archer-start": "bow",
   "medic-start": "potion",
@@ -261,6 +263,7 @@ export function itemKindFromProduct(product: { name: string; slug: string; categ
   }
 
   if (product.slug === "private-access" || value.includes("приват")) return "wooden_axe";
+  if (product.slug === CUSTOM_DISCORD_ROLE_SLUG || value.includes("discord") || value.includes("роль")) return "gold_ingot";
   if (value.includes("компас") || value.includes("compass")) return "compass";
   if (value.includes("зберіган") || value.includes("інвентар") || value.includes("inventory")) return "beacon";
   if (value.includes("друге життя") || value.includes("second-life")) return "totem_of_undying";
@@ -399,6 +402,7 @@ export function itemKindFromText(text: string, fallback = "shulker_box"): string
   if (has("блоки для будівництва", "блоки для позицій", "building blocks")) return "cobblestone";
 
   if (has("приват", "клейм", "private", "claim")) return "wooden_axe";
+  if (has("discord", "роль")) return "gold_ingot";
   if (has("збереження інвентарю", "інвентар", "inventory")) return "beacon";
 
   return fallback;

@@ -17,6 +17,7 @@ import type { CartProduct } from "@/components/cart-storage";
 import { ItemIcon, itemKindFromProduct, itemKindFromText } from "@/components/ItemIcon";
 import { categoryMeta, parseTextList, teamLabels } from "@/lib/catalog";
 import { formatTalers } from "@/lib/currency";
+import { isCustomDiscordRoleProduct } from "@/lib/product-customizations";
 
 export type CatalogProduct = {
   id: string;
@@ -426,6 +427,10 @@ function productBadges(product: CatalogProduct) {
 
   if (product.category === "event_perks") {
     badges.push({ label: "На весь івент", className: "border-gold/45 bg-gold/10 text-gold" });
+  }
+
+  if (isCustomDiscordRoleProduct(product)) {
+    badges.push({ label: "Discord", className: "border-ward/45 bg-ward/10 text-ward" });
   }
 
   return badges.slice(0, 3);
