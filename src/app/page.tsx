@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -6,36 +5,47 @@ import {
   Info,
   MessageCircle,
   Music2,
+  PackageCheck,
   Radio,
-  Shield,
-  Skull,
+  ShieldCheck,
+  ShoppingBag,
   Twitch,
   Youtube
 } from "lucide-react";
 import { ItemIcon } from "@/components/ItemIcon";
 import { creatorInfo } from "@/lib/creator";
-import { eventInfo } from "@/lib/event-info";
+import { siteInfo } from "@/lib/site";
 
-const sides = [
+const showcaseItems = [
+  { label: "Шалкери", iconKind: "shulker_box", className: "left-[6%] top-[8%] h-28 w-28 border-ward/35 bg-ward/10" },
+  { label: "Алмази", iconKind: "diamond", className: "right-[12%] top-[4%] h-24 w-24 border-moss/35 bg-moss/10" },
+  { label: "Броня", iconKind: "netherite_chestplate", className: "left-[32%] top-[32%] h-36 w-36 border-gold/35 bg-gold/10" },
+  { label: "Тотеми", iconKind: "totem_of_undying", className: "right-[2%] top-[40%] h-28 w-28 border-gold/35 bg-gold/10" },
+  { label: "Інструменти", iconKind: "diamond_pickaxe", className: "left-[4%] bottom-[8%] h-24 w-24 border-moss/35 bg-moss/10" },
+  { label: "Зілля", iconKind: "potion", className: "right-[30%] bottom-[4%] h-24 w-24 border-ward/35 bg-ward/10" }
+];
+
+const highlights = [
   {
-    title: "Люди",
-    eyebrow: "Base defense",
-    text: "Будують укріплення, ділять ресурси, тримають ворота й доживають до фінального таймера.",
-    icon: Shield,
-    accentText: "text-ward",
-    accentBorder: "border-ward/30",
-    accentBg: "bg-ward/10",
-    className: "ward-frame"
+    title: "Ресурси",
+    text: "Алмази, злитки, блоки, їжа, витратники й корисні предмети для швидкого прогресу.",
+    iconKind: "diamond",
+    accent: "text-moss",
+    frame: "hover:border-moss/40 hover:shadow-glow"
   },
   {
-    title: "Зомбі",
-    eyebrow: "Infection wave",
-    text: "Тиснуть хвилями, шукають слабкі місця в базі й перетворюють необережних гравців на союзників.",
-    icon: Skull,
-    accentText: "text-blood",
-    accentBorder: "border-blood/30",
-    accentBg: "bg-blood/10",
-    className: "danger-frame"
+    title: "Набори",
+    text: "Готові комплекти для старту, будівництва, бою, дослідження й довгого виживання.",
+    iconKind: "shulker_box",
+    accent: "text-ward",
+    frame: "ward-frame"
+  },
+  {
+    title: "Суперпредмети",
+    text: "Преміум-речі з адмін-чарами та особливими комбінаціями, які видаються контрольовано.",
+    iconKind: "netherite_chestplate",
+    accent: "text-gold",
+    frame: "legendary-frame shadow-goldglow"
   }
 ];
 
@@ -98,38 +108,23 @@ export default function HomePage() {
   return (
     <div>
       <section className="relative min-h-[calc(100svh-76px)] overflow-hidden">
-        <div className="absolute inset-0">
-          <Image
-            src="/zombie-event-hero.png"
-            alt="Нічний кубічний світ із силуетами людей, зомбі та червоним сигналом небезпеки"
-            fill
-            priority
-            className="object-cover opacity-70"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-bunker via-bunker/80 to-bunker/30" />
-          <div className="absolute inset-0 bg-gradient-to-t from-bunker via-transparent to-black/40" />
-          <div className="absolute inset-0 bg-grid-fade bg-[length:72px_72px] opacity-35" />
-        </div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_16%,rgba(57,255,20,0.12),transparent_26rem),radial-gradient(circle_at_82%_18%,rgba(45,212,191,0.12),transparent_24rem),linear-gradient(180deg,rgba(7,17,10,0.98),rgba(6,10,8,0.96))]" />
+        <div className="absolute inset-0 bg-grid-fade bg-[length:72px_72px] opacity-45" />
 
-        <div className="pointer-events-none absolute right-[8%] top-[16%] hidden h-16 w-16 animate-slow-float border border-moss/30 bg-moss/20 shadow-glow sm:block" />
-        <div className="pointer-events-none absolute bottom-[18%] right-[18%] hidden h-20 w-12 border border-blood/30 bg-blood/20 shadow-redglow lg:block" />
-        <div className="pointer-events-none absolute bottom-[14%] left-[9%] hidden h-12 w-28 border border-gold/30 bg-gold/10 shadow-goldglow md:block" />
-
-        <div className="shell relative flex min-h-[calc(100svh-76px)] items-center py-14">
-          <div className="max-w-4xl pb-16 pt-6">
+        <div className="shell relative grid min-h-[calc(100svh-76px)] gap-10 py-14 lg:grid-cols-[1fr_0.86fr] lg:items-center">
+          <div className="max-w-4xl pb-10 pt-6">
             <div className="mb-5 inline-flex items-center gap-2 rounded-sm border border-moss/40 bg-moss/10 px-3 py-2 text-sm font-black uppercase tracking-wide text-acid shadow-glow">
               <span className="h-2.5 w-2.5 animate-green-pulse rounded-full bg-acid shadow-[0_0_20px_rgba(57,255,20,0.9)]" />
               Купівля доступна 24/7
             </div>
             <h1 className="voxel-title text-balance text-5xl font-black uppercase leading-none text-white sm:text-6xl lg:text-8xl">
-              Zombie Event Shop
+              {siteInfo.name}
             </h1>
             <p className="mt-6 max-w-2xl text-xl font-semibold leading-8 text-fog/80 sm:text-2xl">
-              Minecraft-крамниця для івенту: набори, шалкери й ресурси для стріму “Зомбі проти людей”.
-              Поповнюй баланс талерами й купуй товари без окремої гривневої оплати за кожен набір.
+              Ресурси, шалкери, набори й окремі предмети для Minecraft-виживання з модами. Поповнюй баланс талерами та купуй усе з одного магазину.
             </p>
             <div className="mt-6 max-w-3xl rounded-sm border border-moss/30 bg-moss/10 px-4 py-3 font-bold leading-7 text-acid">
-              Ресурси можна придбати у будь-який час. Матч завершується перемогою зомбі або якщо люди прожили 100 Minecraft-днів.
+              Товари можна додати в кошик у будь-який час. Видача проходить після підтвердження адміністратором і відкриття сервера.
             </div>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <Link
@@ -146,10 +141,10 @@ export default function HomePage() {
                 Поповнити баланс
               </Link>
               <a
-                href={eventInfo.discordUrl}
+                href={siteInfo.discordUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="menu-button inline-flex items-center justify-center gap-2 rounded-sm border border-blood/40 bg-blood/10 px-7 py-4 text-base font-black uppercase text-white transition hover:-translate-y-1 hover:bg-blood/20"
+                className="menu-button inline-flex items-center justify-center gap-2 rounded-sm border border-ward/40 bg-ward/10 px-7 py-4 text-base font-black uppercase text-white transition hover:-translate-y-1 hover:bg-ward/20"
               >
                 <MessageCircle size={20} />
                 Discord
@@ -158,9 +153,9 @@ export default function HomePage() {
 
             <div className="mt-10 grid max-w-3xl gap-3 sm:grid-cols-3">
               {[
-                ["5", "категорій товарів"],
-                ["0 грн", "вхід на івент"],
-                ["24/7", "купівля ресурсів"]
+                ["24/7", "купівля товарів"],
+                ["талери", "оплата з балансу"],
+                ["ресурси", "для виживання"]
               ].map(([value, label]) => (
                 <div key={label} className="border border-white/10 bg-black/25 px-4 py-3 backdrop-blur">
                   <p className="text-2xl font-black text-acid">{value}</p>
@@ -169,34 +164,43 @@ export default function HomePage() {
               ))}
             </div>
           </div>
+
+          <div className="relative hidden min-h-[520px] lg:block" aria-hidden="true">
+            <div className="absolute inset-10 border border-white/10 bg-black/20 shadow-block" />
+            {showcaseItems.map((item) => (
+              <div
+                key={item.label}
+                className={`item-cube absolute grid place-items-center border backdrop-blur ${item.className}`}
+              >
+                <ItemIcon kind={item.iconKind} size={item.className.includes("h-36") ? "xl" : "lg"} />
+                <span className="absolute -bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-sm border border-white/10 bg-black/55 px-2 py-1 text-xs font-black uppercase text-fog/75">
+                  {item.label}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      <section className="shell relative z-10 -mt-16 grid gap-8 pb-16 md:grid-cols-2 lg:-mt-20 lg:gap-10 lg:pb-20">
-        {sides.map((side) => {
-          const Icon = side.icon;
-          return (
-            <article key={side.title} className={`panel pixel-corners shop-card p-7 shadow-block sm:p-8 ${side.className}`}>
-              <div className="flex items-start justify-between gap-6">
-                <div>
-                  <p className={`text-sm font-black uppercase tracking-wide ${side.accentText}`}>{side.eyebrow}</p>
-                  <h2 className="mt-3 text-3xl font-black text-white">{side.title}</h2>
-                </div>
-                <div className={`item-cube grid h-16 w-16 place-items-center border ${side.accentBorder} ${side.accentBg}`}>
-                  <Icon className={side.accentText} size={34} />
-                </div>
+      <section className="shell relative z-10 -mt-10 grid gap-7 pb-16 md:grid-cols-3 lg:-mt-16 lg:pb-20">
+        {highlights.map((item) => (
+          <article key={item.title} className={`panel shop-card p-7 shadow-block sm:p-8 ${item.frame}`}>
+            <div className="flex items-start justify-between gap-6">
+              <div>
+                <p className={`text-sm font-black uppercase tracking-wide ${item.accent}`}>Каталог</p>
+                <h2 className="mt-3 text-3xl font-black text-white">{item.title}</h2>
               </div>
-              <p className="mt-6 max-w-xl text-lg leading-8 text-fog/70">{side.text}</p>
-            </article>
-          );
-        })}
+              <div className="item-cube grid h-16 w-16 place-items-center border border-white/10 bg-black/25">
+                <ItemIcon kind={item.iconKind} size="md" />
+              </div>
+            </div>
+            <p className="mt-6 max-w-xl text-lg leading-8 text-fog/70">{item.text}</p>
+          </article>
+        ))}
       </section>
 
       <section id="smurfplay" className="shell pb-16 pt-4 sm:pb-20 lg:pt-8">
         <div className="pixel-corners relative overflow-hidden border border-ward/30 bg-[linear-gradient(135deg,rgba(45,212,191,0.16),rgba(17,26,19,0.94)_38%,rgba(7,17,10,0.96))] p-8 shadow-glow sm:p-10 lg:p-12">
-          <div className="pointer-events-none absolute right-8 top-8 hidden h-20 w-20 border border-ward/40 bg-ward/10 shadow-glow lg:block" />
-          <div className="pointer-events-none absolute bottom-8 right-36 hidden h-12 w-28 border border-blood/30 bg-blood/10 shadow-redglow lg:block" />
-
           <div className="relative grid gap-9 lg:grid-cols-[1fr_0.82fr] lg:items-center">
             <div>
               <p className="inline-flex items-center gap-2 rounded-sm border border-ward/30 bg-ward/10 px-3 py-1.5 text-sm font-black uppercase tracking-wide text-ward">
@@ -207,8 +211,8 @@ export default function HomePage() {
                 Дивись {creatorInfo.name}
               </h2>
               <p className="mt-5 max-w-2xl text-lg leading-8 text-fog/72">
-                {creatorInfo.name} допомагає розвивати сервер, підтримує активність навколо івенту та робить стріми з живими моментами матчу.
-                Підписка на його платформи допомагає спільноті рости швидше.
+                {creatorInfo.name} розвиває сервер, робить стріми та допомагає спільноті збиратися навколо Minecraft-виживання.
+                Підписка на його платформи підтримує нові сезони й активність на сервері.
               </p>
               <a
                 href={creatorInfo.twitchUrl}
@@ -255,7 +259,7 @@ export default function HomePage() {
         <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <div>
             <p className="text-sm font-black uppercase tracking-wide text-moss">Популярні набори</p>
-            <h2 className="mt-3 text-4xl font-black text-white">Швидкий старт для матчу</h2>
+            <h2 className="mt-3 text-4xl font-black text-white">Швидкий старт для виживання</h2>
           </div>
           <Link href="/shop" className="inline-flex items-center gap-2 font-black text-acid transition hover:text-white">
             Увесь магазин
@@ -265,7 +269,7 @@ export default function HomePage() {
 
         <div className="mt-12 grid gap-8 md:grid-cols-2 xl:grid-cols-4">
           {popular.map((item) => {
-            const isLegendary = item.category === "LEGENDARY" || item.name.includes("Бога");
+            const isLegendary = item.name.includes("Бога");
             return (
               <Link
                 key={item.slug}
@@ -296,8 +300,6 @@ export default function HomePage() {
 
       <section className="shell pb-16 pt-8 sm:pb-20 lg:pt-12">
         <div className="legendary-frame pixel-corners relative overflow-hidden border p-8 shadow-goldglow sm:p-12 lg:p-14">
-          <div className="absolute right-8 top-8 hidden h-24 w-24 animate-gold-pulse border border-gold/50 bg-gold/10 lg:block" />
-          <div className="absolute bottom-8 right-36 hidden h-14 w-28 border border-lava/30 bg-lava/10 lg:block" />
           <div className="relative grid gap-10 lg:grid-cols-[1fr_0.7fr] lg:items-center lg:gap-12">
             <div>
               <p className="inline-flex rounded-sm bg-gold px-3 py-1 text-sm font-black uppercase tracking-wide text-bunker">
@@ -307,8 +309,8 @@ export default function HomePage() {
                 Речі богів
               </h2>
               <p className="mt-5 max-w-2xl text-lg leading-8 text-fog/70">
-                Адмін-чари, survival-неможливі комбінації й золоті набори для особливих раундів.
-                Виглядають як бос-лут, видаються контрольовано й не показують гравцю технічні команди.
+                Адмін-чари, survival-неможливі комбінації та золоті набори для тих, хто хоче максимально сильний лут.
+                Такі предмети видаються вручну й залишаються під контролем адміністрації.
               </p>
               <Link
                 href="/shop#gods"
@@ -319,21 +321,15 @@ export default function HomePage() {
               </Link>
             </div>
             <div className="grid gap-5 sm:grid-cols-2">
-              {["LEGENDARY", "GOD KIT", "POTION", "TOTEMS"].map((label) => (
-                <div key={label} className="block-surface item-cube border border-gold/25 p-6">
-                  <ItemIcon
-                    kind={
-                      label === "TOTEMS"
-                        ? "totem_of_undying"
-                        : label === "POTION"
-                          ? "potion"
-                          : label === "GOD KIT"
-                            ? "netherite_chestplate"
-                            : "beacon"
-                    }
-                    size="md"
-                  />
-                  <p className="mt-5 text-xl font-black text-white">{label}</p>
+              {[
+                { label: "LEGENDARY", iconKind: "beacon" },
+                { label: "GOD KIT", iconKind: "netherite_chestplate" },
+                { label: "POTION", iconKind: "potion" },
+                { label: "TOTEMS", iconKind: "totem_of_undying" }
+              ].map((item) => (
+                <div key={item.label} className="block-surface item-cube border border-gold/25 p-6">
+                  <ItemIcon kind={item.iconKind} size="md" />
+                  <p className="mt-5 text-xl font-black text-white">{item.label}</p>
                 </div>
               ))}
             </div>
@@ -343,9 +339,9 @@ export default function HomePage() {
 
       <section className="shell grid gap-8 pb-24 pt-8 md:grid-cols-3 lg:pb-28 lg:pt-12">
         {[
-          { title: "Виживання", text: "Темний нічний світ, оборона бази й хвилі зараження.", icon: Shield },
-          { title: "Баланс", text: "Преміум-набори виглядають дорого, але лишаються під контролем адміністрації.", icon: Shield },
-          { title: "Видача", text: "Купуєш 24/7, а ресурси отримуєш після старту стріму.", icon: Info }
+          { title: "Зручно", text: "Додаєш кілька товарів у кошик і оформлюєш усе одним замовленням.", icon: ShoppingBag },
+          { title: "Контроль", text: "Сума й доступність перевіряються на сервері під час покупки.", icon: ShieldCheck },
+          { title: "Видача", text: "Адміністратор бачить замовлення й команди видачі в адмін-панелі.", icon: Info }
         ].map((item) => {
           const Icon = item.icon;
           return (

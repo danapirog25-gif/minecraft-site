@@ -8,6 +8,7 @@ import { parseOrderProducts } from "@/lib/catalog";
 import { formatTalers } from "@/lib/currency";
 import { formatProductCustomizationLines } from "@/lib/product-customizations";
 import { prisma } from "@/lib/prisma";
+import { siteInfo } from "@/lib/site";
 import { getStoreSettings } from "@/lib/store-settings";
 import { getCurrentUser } from "@/lib/user-auth";
 
@@ -19,7 +20,7 @@ const statusClasses: Record<string, string> = {
   failed: "border-blood/30 bg-blood/10 text-red-100"
 };
 
-const orderSteps = ["Куплено", "Очікує старту", "Готово до видачі", "Видано"];
+const orderSteps = ["Куплено", "Очікує видачі", "Готово до видачі", "Видано"];
 
 function getOrderView(status: string, streamActive: boolean) {
   if (status === "issued") {
@@ -54,23 +55,23 @@ function getOrderView(status: string, streamActive: boolean) {
       label: "Готово до видачі",
       className: "border-moss/30 bg-moss/10 text-acid",
       step: 3,
-      note: "Стрім активний, тож адміністратор може видати ресурси."
+      note: "Сервер відкритий, тож адміністратор може видати ресурси."
     };
   }
 
   return {
-    label: "Очікує старту",
+    label: "Очікує видачі",
     className: "border-lava/30 bg-lava/10 text-orange-100",
     step: 2,
-    note: "Покупка збережена. Видача відкриється після старту стріму та сервера."
+    note: "Покупка збережена. Адміністратор видасть ресурси після перевірки замовлення."
   };
 }
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Мій акаунт | Zombie Event Shop",
-  description: "Баланс талерів, історія покупок і статус видачі ресурсів для Minecraft-івенту."
+  title: `Мій акаунт | ${siteInfo.name}`,
+  description: "Баланс талерів, історія покупок і статус видачі ресурсів у Minecraft-магазині."
 };
 
 export default async function AccountPage() {

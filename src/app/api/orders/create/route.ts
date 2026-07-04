@@ -9,6 +9,7 @@ import {
   isValidDiscordUsername,
   normalizeRoleColor
 } from "@/lib/product-customizations";
+import { PUBLIC_PRODUCT_WHERE } from "@/lib/storefront";
 import { getCurrentUser } from "@/lib/user-auth";
 import { WalletError } from "@/lib/wallet";
 
@@ -59,7 +60,7 @@ export async function POST(request: Request) {
       id: {
         in: productIds
       },
-      isActive: true
+      ...PUBLIC_PRODUCT_WHERE
     }
   });
 

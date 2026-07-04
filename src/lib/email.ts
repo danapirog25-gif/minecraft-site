@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import { EMAIL_VERIFICATION_TTL_MINUTES } from "@/lib/email-verification";
+import { siteInfo } from "@/lib/site";
 
 type RegistrationVerificationEmail = {
   email: string;
@@ -69,21 +70,21 @@ export async function sendRegistrationVerificationEmail({
   await transporter.sendMail({
     from,
     to: email,
-    subject: "Код підтвердження Zombie Event Shop",
+    subject: `Код підтвердження ${siteInfo.name}`,
     text: [
       "Привіт!",
       "",
       `Твій код підтвердження: ${code}`,
       "",
-      `Код діє ${EMAIL_VERIFICATION_TTL_MINUTES} хвилин. Якщо ти не реєструвався на Zombie Event Shop, просто проігноруй цей лист.`
+      `Код діє ${EMAIL_VERIFICATION_TTL_MINUTES} хвилин. Якщо ти не реєструвався на ${siteInfo.name}, просто проігноруй цей лист.`
     ].join("\n"),
     html: `
       <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #111827;">
-        <h1 style="font-size: 22px;">Zombie Event Shop</h1>
+        <h1 style="font-size: 22px;">${siteInfo.name}</h1>
         <p>Твій код підтвердження:</p>
         <p style="font-size: 30px; font-weight: 800; letter-spacing: 6px;">${code}</p>
         <p>Код діє ${EMAIL_VERIFICATION_TTL_MINUTES} хвилин.</p>
-        <p style="color: #6b7280;">Якщо ти не реєструвався на Zombie Event Shop, просто проігноруй цей лист.</p>
+        <p style="color: #6b7280;">Якщо ти не реєструвався на ${siteInfo.name}, просто проігноруй цей лист.</p>
       </div>
     `
   });
@@ -114,7 +115,7 @@ export async function sendAdminLoginCodeEmail({ emails, code }: AdminLoginCodeEm
   await transporter.sendMail({
     from,
     to: uniqueEmails.join(", "),
-    subject: "Код входу в адмінку Zombie Event Shop",
+    subject: `Код входу в адмінку ${siteInfo.name}`,
     text: [
       "Привіт!",
       "",
@@ -124,7 +125,7 @@ export async function sendAdminLoginCodeEmail({ emails, code }: AdminLoginCodeEm
     ].join("\n"),
     html: `
       <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #111827;">
-        <h1 style="font-size: 22px;">Zombie Event Shop Admin</h1>
+        <h1 style="font-size: 22px;">${siteInfo.name} Admin</h1>
         <p>Код входу в адмінку:</p>
         <p style="font-size: 30px; font-weight: 800; letter-spacing: 6px;">${code}</p>
         <p>Код діє 10 хвилин.</p>

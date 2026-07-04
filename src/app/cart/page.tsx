@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ShoppingCart } from "lucide-react";
+import { siteInfo } from "@/lib/site";
 import { getCurrentUser } from "@/lib/user-auth";
 import { CartClient } from "./CartClient";
 
 export const metadata: Metadata = {
-  title: "Кошик | Zombie Event Shop",
+  title: `Кошик | ${siteInfo.name}`,
   description: "Оформлення кількох наборів і ресурсів одним замовленням за талери."
 };
 

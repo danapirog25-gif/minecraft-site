@@ -256,7 +256,7 @@ export function CartClient({ initialUser }: CartClientProps) {
                         value={roleRequests[item.id]?.roleName ?? ""}
                         onChange={(event) => updateRoleRequest(item.id, { roleName: event.target.value })}
                         className="rounded-sm border border-white/20 bg-black/30 px-4 py-3 text-white outline-none transition placeholder:text-fog/40 focus:border-gold focus:shadow-goldglow"
-                        placeholder="Наприклад: Легенда івенту"
+                        placeholder="Наприклад: Легенда сервера"
                       />
                     </label>
                   </div>

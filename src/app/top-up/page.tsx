@@ -5,14 +5,15 @@ import { Clock, CreditCard, ShieldCheck } from "lucide-react";
 import { ItemIcon } from "@/components/ItemIcon";
 import { formatHryvnias, formatTalers } from "@/lib/currency";
 import { prisma } from "@/lib/prisma";
+import { siteInfo } from "@/lib/site";
 import { getCurrentUser } from "@/lib/user-auth";
 import { TopUpPanel } from "./TopUpPanel";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Купити талери | Zombie Event Shop",
-  description: "Ручне поповнення балансу талерів для покупок у Minecraft-магазині івенту."
+  title: `Купити талери | ${siteInfo.name}`,
+  description: "Ручне поповнення балансу талерів для покупок у Minecraft-магазині."
 };
 
 const statusLabels: Record<string, string> = {

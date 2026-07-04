@@ -3,18 +3,20 @@ import Link from "next/link";
 import { Info, Wallet } from "lucide-react";
 import { itemKindFromProduct } from "@/components/ItemIcon";
 import { prisma } from "@/lib/prisma";
+import { siteInfo } from "@/lib/site";
+import { PUBLIC_PRODUCT_WHERE } from "@/lib/storefront";
 import { ShopCatalog } from "./ShopCatalog";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Магазин | Zombie Event Shop",
-  description: "Каталог наборів, шалкерів, ресурсів і суперпредметів для Minecraft-івенту Зомбі проти людей."
+  title: `Магазин | ${siteInfo.name}`,
+  description: "Каталог наборів, шалкерів, ресурсів і суперпредметів для Minecraft-виживання."
 };
 
 export default async function ShopPage() {
   const products = await prisma.product.findMany({
-    where: { isActive: true },
+    where: PUBLIC_PRODUCT_WHERE,
     orderBy: [{ category: "asc" }, { price: "asc" }]
   });
 
@@ -35,15 +37,15 @@ export default async function ShopPage() {
     <section className="shell py-20 sm:py-24">
       <div className="grid gap-8 lg:grid-cols-[1fr_0.42fr] lg:items-end">
         <div>
-          <p className="text-sm font-black uppercase tracking-wide text-moss">Minecraft-крамниця івенту</p>
+          <p className="text-sm font-black uppercase tracking-wide text-moss">Minecraft-магазин</p>
           <h1 className="voxel-title mt-4 text-5xl font-black uppercase leading-tight text-white">
             Ресурси, шалкери й набори
           </h1>
           <p className="mt-5 max-w-3xl text-lg leading-8 text-fog/72">
-            Ресурси можна придбати у будь-який час. Видача відбудеться одразу після початку стріму та відкриття сервера.
+            Ресурси можна придбати у будь-який час. Видача відбудеться після підтвердження замовлення адміністратором і відкриття сервера.
           </p>
           <p className="mt-3 max-w-3xl leading-7 text-fog/65">
-            Вхід на івент безкоштовний. Купівля наборів — це добровільна підтримка стріму.
+            Обирайте готові комплекти або окремі предмети для виживання з модами. Оплата проходить талерами з балансу акаунта.
           </p>
         </div>
         <div className="panel rounded-sm border-moss/30 p-5 shadow-glow">

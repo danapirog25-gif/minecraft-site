@@ -15,7 +15,7 @@ import {
 import { CartButton } from "@/components/CartButton";
 import type { CartProduct } from "@/components/cart-storage";
 import { ItemIcon, itemKindFromProduct, itemKindFromText } from "@/components/ItemIcon";
-import { categoryMeta, parseTextList, teamLabels } from "@/lib/catalog";
+import { categoryMeta, parseTextList } from "@/lib/catalog";
 import { formatTalers } from "@/lib/currency";
 import { isCustomDiscordRoleProduct } from "@/lib/product-customizations";
 
@@ -100,7 +100,7 @@ const catalogTabs: {
   {
     id: "bundles",
     title: "Набори",
-    description: "Стартові комплекти, шалкери, суперпредмети та івент-послуги.",
+    description: "Стартові комплекти, шалкери, бойові набори та суперпредмети.",
     iconKind: "shulker_box"
   },
   {
@@ -426,7 +426,7 @@ function productBadges(product: CatalogProduct) {
   }
 
   if (product.category === "event_perks") {
-    badges.push({ label: "На весь івент", className: "border-gold/45 bg-gold/10 text-gold" });
+    badges.push({ label: "Послуга", className: "border-gold/45 bg-gold/10 text-gold" });
   }
 
   if (isCustomDiscordRoleProduct(product)) {
@@ -453,7 +453,6 @@ function ProductCard({ product, categoryTitle }: { product: CatalogProduct; cate
           <p className={`rounded-sm bg-black/30 px-3 py-2 text-xl font-black ${style.price}`}>
             {formatTalers(product.price)}
           </p>
-          <p className="mt-2 text-xs font-black uppercase text-fog/45">{teamLabels[product.team] ?? product.team}</p>
         </div>
       </div>
 
@@ -493,7 +492,7 @@ function ProductCard({ product, categoryTitle }: { product: CatalogProduct; cate
         </div>
 
         <p className="rounded-sm border border-white/10 bg-white/5 p-3 text-sm leading-6 text-fog/65">
-          {benefits[0] ?? "Корисний набір для івенту."}
+          {benefits[0] ?? "Корисний набір для виживання."}
         </p>
       </div>
 
@@ -581,14 +580,12 @@ function ResourceCard({ group }: { group: { slug: string; title: string; product
 type FilterState = {
   query: string;
   category: string;
-  team: string;
   sort: "category" | "price_asc" | "price_desc";
 };
 
 const initialFilters: FilterState = {
   query: "",
   category: "all",
-  team: "all",
   sort: "category"
 };
 
@@ -601,7 +598,6 @@ function matchesQuery(product: CatalogProduct, query: string) {
     product.name,
     product.description,
     product.slug,
-    teamLabels[product.team] ?? product.team,
     parseTextList(product.contents).join(" "),
     parseTextList(product.benefits).join(" ")
   ]
@@ -678,8 +674,7 @@ export function ShopCatalog({ products }: { products: CatalogProduct[] }) {
     const filtered = products.filter((product) => {
       const tabMatches = categoryBelongsToTab(product.category, activeTab);
       const categoryMatches = filters.category === "all" || product.category === filters.category;
-      const teamMatches = filters.team === "all" || product.team === filters.team;
-      return tabMatches && categoryMatches && teamMatches && matchesQuery(product, filters.query.trim());
+      return tabMatches && categoryMatches && matchesQuery(product, filters.query.trim());
     });
 
     return sortProducts(filtered, filters.sort);
@@ -732,6 +727,10 @@ export function ShopCatalog({ products }: { products: CatalogProduct[] }) {
     }
     return filteredProducts.some((product) => product.category === category.id);
   });
+
+  const filterCategoryOptions = activeCategoryMeta.filter((category) =>
+    products.some((product) => product.category === category.id)
+  );
 
   const filteredResourceGroups = useMemo(
     () => groupResourceProducts(filteredProducts.filter((product) => product.category === RESOURCE_CATEGORY_ID)),
@@ -822,7 +821,7 @@ export function ShopCatalog({ products }: { products: CatalogProduct[] }) {
         </div>
       </section>
 
-      <div className="mt-4 grid gap-4 rounded-sm border border-white/10 bg-black/20 p-4 lg:grid-cols-[1.2fr_0.8fr_0.7fr_0.7fr_auto] lg:items-end">
+      <div className="mt-4 grid gap-4 rounded-sm border border-white/10 bg-black/20 p-4 lg:grid-cols-[1.2fr_0.8fr_0.7fr_auto] lg:items-end">
         <label className="grid gap-2">
           <span className="inline-flex items-center gap-2 text-sm font-black uppercase text-fog/60">
             <Search size={16} className="text-moss" />
@@ -847,24 +846,11 @@ export function ShopCatalog({ products }: { products: CatalogProduct[] }) {
             className="rounded-sm border border-white/20 bg-black/30 px-4 py-3 outline-none transition focus:border-moss focus:shadow-glow"
           >
             <option value="all">{allCategoriesLabel}</option>
-            {activeCategoryMeta.map((category) => (
+            {filterCategoryOptions.map((category) => (
               <option key={category.id} value={category.id}>
                 {category.title}
               </option>
             ))}
-          </select>
-        </label>
-
-        <label className="grid gap-2">
-          <span className="text-sm font-black uppercase text-fog/60">Для кого</span>
-          <select
-            value={filters.team}
-            onChange={(event) => setFilters((current) => ({ ...current, team: event.target.value }))}
-            className="rounded-sm border border-white/20 bg-black/30 px-4 py-3 outline-none transition focus:border-moss focus:shadow-glow"
-          >
-            <option value="all">Усі</option>
-            <option value="humans">Люди</option>
-            <option value="zombies">Зомбі</option>
           </select>
         </label>
 
@@ -907,7 +893,7 @@ export function ShopCatalog({ products }: { products: CatalogProduct[] }) {
             >
               {allCategoriesLabel}
             </button>
-            {activeCategoryMeta.map((category) => {
+            {filterCategoryOptions.map((category) => {
               const style = getStyle(category.id);
               return (
                 <button

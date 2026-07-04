@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
-import { MessageCircle, Music2, Send, ShieldCheck, Twitch, UserRound, Youtube } from "lucide-react";
+import { MessageCircle, Music2, Send, Twitch, UserRound, Youtube } from "lucide-react";
 import { CartNavLink } from "@/components/CartNavLink";
 import { ItemIcon } from "@/components/ItemIcon";
 import { MobileMenu } from "@/components/MobileMenu";
 import { creatorInfo } from "@/lib/creator";
 import { formatTalers } from "@/lib/currency";
-import { eventInfo } from "@/lib/event-info";
+import { siteInfo } from "@/lib/site";
 import { getCurrentUser } from "@/lib/user-auth";
 import "./globals.css";
 
@@ -21,28 +20,28 @@ function getMetadataBase() {
 
 export const metadata: Metadata = {
   metadataBase: getMetadataBase(),
-  title: "Zombie Event Shop",
-  description: "Dark-gaming магазин добровільних наборів для безкоштовного Minecraft-івенту Зомбі проти людей.",
+  title: siteInfo.name,
+  description: siteInfo.description,
   icons: {
     icon: [
       { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
       { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-      { url: "/zombie-event-icon.png", sizes: "512x512", type: "image/png" }
+      { url: siteInfo.icon, sizes: "512x512", type: "image/png" }
     ],
-    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }]
+    apple: [{ url: siteInfo.icon, sizes: "180x180", type: "image/png" }]
   },
   openGraph: {
-    title: "Zombie Event Shop",
-    description: "Набори, шалкери, ресурси й талери для Minecraft-івенту Зомбі проти людей.",
-    images: ["/zombie-event-icon.png"],
+    title: siteInfo.name,
+    description: siteInfo.description,
+    images: [siteInfo.icon],
     locale: "uk_UA",
     type: "website"
   },
   twitter: {
     card: "summary_large_image",
-    title: "Zombie Event Shop",
-    description: "Minecraft-крамниця для івенту Зомбі проти людей.",
-    images: ["/zombie-event-icon.png"]
+    title: siteInfo.name,
+    description: siteInfo.description,
+    images: [siteInfo.icon]
   }
 };
 
@@ -60,34 +59,21 @@ export default async function RootLayout({
           <nav className="shell flex min-h-16 items-center justify-between gap-4 py-3">
             <Link href="/" className="group flex items-center gap-3">
               <span className="item-cube grid h-11 w-11 overflow-hidden border border-moss/40 bg-black/35 shadow-glow transition group-hover:border-acid">
-                <Image
-                  src="/zombie-event-icon.png"
-                  alt=""
-                  width={44}
-                  height={44}
-                  priority
-                  className="h-full w-full object-cover"
-                />
+                <ItemIcon kind="shulker_box" size="sm" />
               </span>
               <span>
                 <span className="block text-sm font-black uppercase tracking-wide text-white sm:text-base">
-                  Zombie Event Shop
+                  {siteInfo.name}
                 </span>
-                <span className="block text-xs text-fog/60">Зомбі проти людей</span>
+                <span className="block text-xs text-fog/60">{siteInfo.tagline}</span>
               </span>
             </Link>
             <div className="hidden flex-wrap justify-end gap-1 text-sm font-bold text-fog/75 sm:gap-2 lg:flex">
               <Link className="rounded-sm px-3 py-2 transition hover:bg-white/10 hover:text-white" href="/shop">
                 Магазин
               </Link>
-              <Link className="rounded-sm px-3 py-2 transition hover:bg-white/10 hover:text-white" href="/event">
-                Івент
-              </Link>
               <Link className="rounded-sm px-3 py-2 transition hover:bg-white/10 hover:text-white" href="/faq">
                 FAQ
-              </Link>
-              <Link className="rounded-sm px-3 py-2 transition hover:bg-white/10 hover:text-white" href="/rules">
-                Правила
               </Link>
               <Link className="rounded-sm border border-gold/30 bg-gold/10 px-3 py-2 text-gold transition hover:bg-gold/20" href="/shop#gods">
                 Суперпредмети
@@ -128,17 +114,11 @@ export default async function RootLayout({
             <div>
               <div className="flex items-center gap-3">
                 <span className="item-cube grid h-10 w-10 overflow-hidden border border-moss/30 bg-black/35">
-                  <Image
-                    src="/zombie-event-icon.png"
-                    alt=""
-                    width={40}
-                    height={40}
-                    className="h-full w-full object-cover"
-                  />
+                  <ItemIcon kind="shulker_box" size="sm" />
                 </span>
                 <div>
-                  <p className="font-black uppercase tracking-wide text-white">Zombie Event Shop</p>
-                  <p className="text-sm text-fog/56">Безкоштовний вхід, добровільна підтримка стріму.</p>
+                  <p className="font-black uppercase tracking-wide text-white">{siteInfo.name}</p>
+                  <p className="text-sm text-fog/56">Ресурси, набори й корисні предмети за талери.</p>
                 </div>
               </div>
               <p className="mt-5 max-w-xl text-xs font-semibold uppercase leading-6 text-fog/50">
@@ -150,7 +130,7 @@ export default async function RootLayout({
             <div>
               <p className="text-sm font-black uppercase tracking-wide text-moss">Спільнота</p>
               <div className="mt-4 grid gap-3 text-sm text-fog/70">
-                <a className="inline-flex items-center gap-2 transition hover:text-white" href={eventInfo.discordUrl} target="_blank" rel="noreferrer">
+                <a className="inline-flex items-center gap-2 transition hover:text-white" href={siteInfo.discordUrl} target="_blank" rel="noreferrer">
                   <MessageCircle size={16} className="text-moss" />
                   Discord
                 </a>
@@ -166,7 +146,7 @@ export default async function RootLayout({
                   <Music2 size={16} className="text-ward" />
                   SmurfPlay TikTok
                 </a>
-                <a className="inline-flex items-center gap-2 transition hover:text-white" href="https://t.me/" target="_blank" rel="noreferrer">
+                <a className="inline-flex items-center gap-2 transition hover:text-white" href={siteInfo.telegramUrl} target="_blank" rel="noreferrer">
                   <Send size={16} className="text-ward" />
                   Telegram
                 </a>
@@ -174,20 +154,19 @@ export default async function RootLayout({
             </div>
 
             <div>
-              <p className="text-sm font-black uppercase tracking-wide text-moss">Івент</p>
+              <p className="text-sm font-black uppercase tracking-wide text-moss">Магазин</p>
               <div className="mt-4 grid gap-3 text-sm text-fog/70">
-                <Link className="inline-flex items-center gap-2 transition hover:text-white" href="/rules">
-                  <ShieldCheck size={16} className="text-gold" />
-                  Правила івенту
-                </Link>
-                <Link className="transition hover:text-white" href="/event">
-                  Статус івенту
+                <Link className="transition hover:text-white" href="/shop">
+                  Каталог товарів
                 </Link>
                 <Link className="transition hover:text-white" href="/faq">
-                  FAQ перед оплатою
+                  FAQ перед покупкою
                 </Link>
-                <a className="transition hover:text-white" href="mailto:waife9260@gmail.com">
-                  waife9260@gmail.com
+                <Link className="transition hover:text-white" href="/top-up">
+                  Поповнити баланс
+                </Link>
+                <a className="transition hover:text-white" href={`mailto:${siteInfo.supportEmail}`}>
+                  {siteInfo.supportEmail}
                 </a>
               </div>
             </div>

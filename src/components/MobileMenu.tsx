@@ -16,9 +16,7 @@ type MobileMenuProps = {
 
 const links = [
   { href: "/shop", label: "Магазин" },
-  { href: "/event", label: "Івент наживо" },
   { href: "/faq", label: "FAQ" },
-  { href: "/rules", label: "Правила" },
   { href: "/shop#gods", label: "Суперпредмети" }
 ];
 

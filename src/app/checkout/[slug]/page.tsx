@@ -3,8 +3,9 @@ import { notFound, redirect } from "next/navigation";
 import { AlertTriangle, CheckCircle2, PackageOpen, ShieldCheck, Wallet } from "lucide-react";
 import { ItemIcon, itemKindFromProduct, itemKindFromText } from "@/components/ItemIcon";
 import { prisma } from "@/lib/prisma";
-import { categoryLabels, parseTextList, teamLabels } from "@/lib/catalog";
+import { categoryLabels, parseTextList } from "@/lib/catalog";
 import { formatTalers } from "@/lib/currency";
+import { PUBLIC_PRODUCT_WHERE } from "@/lib/storefront";
 import { getCurrentUser } from "@/lib/user-auth";
 import CheckoutForm from "./CheckoutForm";
 
@@ -19,7 +20,7 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
     prisma.product.findFirst({
       where: {
         slug: params.slug,
-        isActive: true
+        ...PUBLIC_PRODUCT_WHERE
       }
     }),
     getCurrentUser()
@@ -48,7 +49,7 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
             Перевір товар, контакт для видачі й підтвердь покупку за талери з балансу.
           </p>
           <p className="mt-4 inline-flex rounded-sm border border-moss/30 bg-moss/10 px-4 py-3 font-bold text-acid">
-            Купівля доступна 24/7. Видача буде після старту стріму та відкриття сервера.
+            Купівля доступна 24/7. Видача буде після підтвердження замовлення адміністратором і відкриття сервера.
           </p>
         </div>
         <Link href={`/shop/${product.slug}`} className="font-black text-acid transition hover:text-white">
@@ -72,16 +73,12 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
 
           <p className="mt-4 leading-8 text-fog/70">{product.description}</p>
 
-          <div className="mt-6 grid gap-3 sm:grid-cols-2">
+          <div className="mt-6 grid gap-3">
             <div className="block-surface rounded-sm border border-white/10 p-4">
               <p className="text-xs font-black uppercase text-fog/50">Сума</p>
               <p className={`mt-1 text-3xl font-black ${isLegendary ? "text-gold" : "text-acid"}`}>
                 {formatTalers(product.price)}
               </p>
-            </div>
-            <div className="block-surface rounded-sm border border-white/10 p-4">
-              <p className="text-xs font-black uppercase text-fog/50">Для кого</p>
-              <p className="mt-2 text-lg font-black text-white">{teamLabels[product.team] ?? product.team}</p>
             </div>
           </div>
 
@@ -111,7 +108,7 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
               Переваги
             </p>
             <ul className="space-y-2 text-sm leading-6 text-fog/70">
-              {(benefits.length ? benefits.slice(0, 3) : ["Підходить для швидкої участі в івенті"]).map((item) => (
+              {(benefits.length ? benefits.slice(0, 3) : ["Підходить для швидкого старту у виживанні"]).map((item) => (
                 <li key={item} className="flex gap-2">
                   <span className="mt-2 h-1.5 w-1.5 shrink-0 bg-acid" />
                   <span>{item}</span>
@@ -124,7 +121,7 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
             <div className="flex gap-3">
               <AlertTriangle className="mt-1 shrink-0 text-lava" size={20} />
               <p className="text-sm leading-6 text-fog/70">
-                Товар видається адміністратором після підтвердження оплати, старту стріму та відкриття сервера.
+                Товар видається адміністратором після підтвердження покупки та відкриття сервера.
               </p>
             </div>
           </div>

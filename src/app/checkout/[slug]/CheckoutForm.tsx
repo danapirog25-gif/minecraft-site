@@ -190,7 +190,7 @@ export default function CheckoutForm({ product, initialUser }: CheckoutFormProps
                 value={roleForm.roleName}
                 onChange={(event) => setRoleForm((current) => ({ ...current, roleName: event.target.value }))}
                 className="rounded-sm border border-white/20 bg-black/30 px-4 py-3 text-white outline-none transition placeholder:text-fog/40 focus:border-gold focus:shadow-goldglow"
-                placeholder="Наприклад: Легенда івенту"
+                placeholder="Наприклад: Легенда сервера"
               />
               <span className="text-xs font-bold leading-5 text-fog/55">2-40 символів, без @everyone та @here.</span>
             </label>

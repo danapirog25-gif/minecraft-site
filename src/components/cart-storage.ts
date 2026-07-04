@@ -1,7 +1,9 @@
 "use client";
 
-export const CART_STORAGE_KEY = "zombie-event-cart-v1";
-export const CART_CHANGED_EVENT = "zombie-event-cart-changed";
+import { isPublicStoreProduct } from "@/lib/storefront";
+
+export const CART_STORAGE_KEY = "minecraft-store-cart-v1";
+export const CART_CHANGED_EVENT = "minecraft-store-cart-changed";
 
 export type CartProduct = {
   id: string;
@@ -45,7 +47,7 @@ export function readCartProducts(): CartProduct[] {
 
     const unique = new Map<string, CartProduct>();
     for (const item of parsed) {
-      if (isCartProduct(item)) {
+      if (isCartProduct(item) && isPublicStoreProduct(item)) {
         unique.set(item.id, item);
       }
     }

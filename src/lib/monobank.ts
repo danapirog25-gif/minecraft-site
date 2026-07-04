@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { siteInfo } from "@/lib/site";
 
 const MONOBANK_API_URL = "https://api.monobank.ua";
 const MONOBANK_JAR_LINK_BASE_URL = "https://send.monobank.ua/jar";
@@ -79,7 +80,7 @@ export async function createMonoInvoice(input: MonoInvoiceInput): Promise<MonoIn
     headers: {
       "Content-Type": "application/json",
       "X-Token": token,
-      "X-Cms": "Zombie Event Shop"
+      "X-Cms": siteInfo.name
     },
     body: JSON.stringify({
       amount: input.amount,

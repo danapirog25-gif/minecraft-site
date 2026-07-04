@@ -1,6 +1,7 @@
 import type { ProductSnapshot } from "@/lib/catalog";
 import { formatTalers } from "@/lib/currency";
 import { formatProductCustomizationLines } from "@/lib/product-customizations";
+import { siteInfo } from "@/lib/site";
 
 type OrderNotificationInput = {
   orderId: string;
@@ -30,7 +31,7 @@ export async function notifyOrderCreated(input: OrderNotificationInput) {
     })
     .join("\n");
   const content = [
-    "**Нове замовлення в Zombie Event Shop**",
+    `**Нове замовлення в ${siteInfo.name}**`,
     `Гравець: ${input.playerNickname}`,
     `Контакт: ${input.contact}`,
     `Сума: ${formatTalers(input.totalAmount)}`,

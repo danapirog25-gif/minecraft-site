@@ -11,9 +11,11 @@ import {
 import { CartButton } from "@/components/CartButton";
 import { ItemIcon, itemKindFromProduct, itemKindFromText } from "@/components/ItemIcon";
 import { prisma } from "@/lib/prisma";
-import { categoryLabels, parseTextList, teamLabels } from "@/lib/catalog";
+import { categoryLabels, parseTextList } from "@/lib/catalog";
 import { formatTalers } from "@/lib/currency";
 import { isCustomDiscordRoleProduct } from "@/lib/product-customizations";
+import { siteInfo } from "@/lib/site";
+import { PUBLIC_PRODUCT_WHERE } from "@/lib/storefront";
 
 export const dynamic = "force-dynamic";
 
@@ -76,18 +78,18 @@ function getVisual(category: string) {
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const product = await prisma.product.findFirst({
-    where: { slug: params.slug, isActive: true },
+    where: { slug: params.slug, ...PUBLIC_PRODUCT_WHERE },
     select: { name: true, description: true }
   });
 
   if (!product) {
     return {
-      title: "Набір не знайдено"
+      title: "Товар не знайдено"
     };
   }
 
   return {
-    title: `${product.name} | Zombie Event Shop`,
+    title: `${product.name} | ${siteInfo.name}`,
     description: product.description
   };
 }
@@ -96,7 +98,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const product = await prisma.product.findFirst({
     where: {
       slug: params.slug,
-      isActive: true
+      ...PUBLIC_PRODUCT_WHERE
     }
   });
 
@@ -106,8 +108,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   const relatedProducts = await prisma.product.findMany({
     where: {
+      ...PUBLIC_PRODUCT_WHERE,
       category: product.category,
-      isActive: true,
       NOT: { id: product.id }
     },
     orderBy: { price: "asc" },
@@ -163,16 +165,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   Discord
                 </span>
               ) : null}
-              <span className="rounded-sm border border-white/10 bg-white/5 px-3 py-1 text-xs font-black uppercase text-fog/70">
-                Для кого: {teamLabels[product.team] ?? product.team}
-              </span>
             </div>
             <h1 className="voxel-title mt-5 text-4xl font-black uppercase leading-tight text-white sm:text-5xl">
               {product.name}
             </h1>
             <p className="mt-4 text-lg leading-8 text-fog/70">{product.description}</p>
 
-            <div className="mt-7 grid gap-3 sm:grid-cols-3">
+            <div className="mt-7 grid gap-3 sm:grid-cols-2">
               <div className="block-surface rounded-sm border border-white/10 p-4">
                 <p className="text-xs font-black uppercase text-fog/50">Ціна</p>
                 <p className={`mt-2 text-3xl font-black ${visual.price}`}>{formatTalers(product.price)}</p>
@@ -180,10 +179,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
               <div className="block-surface rounded-sm border border-white/10 p-4">
                 <p className="text-xs font-black uppercase text-fog/50">Категорія</p>
                 <p className="mt-2 font-black text-white">{categoryLabels[product.category] ?? product.category}</p>
-              </div>
-              <div className="block-surface rounded-sm border border-white/10 p-4">
-                <p className="text-xs font-black uppercase text-fog/50">Стиль гри</p>
-                <p className="mt-2 font-black text-white">{teamLabels[product.team] ?? product.team}</p>
               </div>
             </div>
 
@@ -208,7 +203,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               className="mt-3 w-full sm:ml-3 sm:mt-8 sm:w-auto"
             />
             <p className="mt-4 max-w-xl rounded-sm border border-moss/30 bg-moss/10 px-4 py-3 text-sm font-bold text-acid">
-              Купівля доступна 24/7. Видача після старту стріму та відкриття сервера.
+              Купівля доступна 24/7. Видача після підтвердження замовлення адміністратором і відкриття сервера.
             </p>
           </div>
         </div>
@@ -241,7 +236,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             {isResource ? "Переваги ресурсу" : "Переваги набору"}
           </p>
           <div className="grid gap-3">
-            {(benefits.length ? benefits : ["Підходить для швидкої участі в івенті."]).map((item) => (
+            {(benefits.length ? benefits : ["Підходить для швидкого старту у виживанні."]).map((item) => (
               <div key={item} className="rounded-sm border border-white/10 bg-white/5 p-4 leading-7 text-fog/70">
                 {item}
               </div>
@@ -256,7 +251,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <div>
             <h2 className="font-black text-white">Важливо</h2>
             <p className="mt-2 leading-7 text-fog/70">
-              Ресурси можна придбати у будь-який час. Видача відбудеться одразу після початку стріму
+              Ресурси можна придбати у будь-який час. Видача відбудеться після підтвердження замовлення
               та відкриття сервера. Minecraft-команди доступні тільки в адмін-панелі.
             </p>
           </div>
